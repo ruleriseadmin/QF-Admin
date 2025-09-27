@@ -12,6 +12,7 @@ import Chart4 from '@/components/analytics/Chart4'
 import CardChart from '@/components/analytics/CardChart'
 import CustomerChart from '@/components/analytics/CustomersChart'
 import UncollectedChart from '@/components/analytics/UncollectedChart'
+import Growth from '@/components/analytics/Growth'
 
 
 
@@ -35,6 +36,7 @@ const Page = () => {
         <CardChart />
         <CustomerChart />
         <UncollectedChart />
+        <Growth />
         <Chart3 />
        <Chart4 />
         

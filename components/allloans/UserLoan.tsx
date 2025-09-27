@@ -1,6 +1,10 @@
-import React from 'react'
+import React,{useState,useEffect} from 'react'
 import { formatCurrency,formatDate,formatTime,calculateClosedDaysBetween } from '@/utils/loan'
 import { IoTime } from "react-icons/io5";
+import { IoIosArrowDropdownCircle } from "react-icons/io";
+import Image from 'next/image';
+import LoadingPage from '@/app/loading';
+import apiClient from '@/utils/apiClient';
 
 type UserLoanProps = {
     loanInfo: any; 
@@ -9,6 +13,37 @@ type UserLoanProps = {
 
 
 const UserLoan: React.FC<UserLoanProps> = ({loanInfo,loanHistory=false}) => {
+  const [openProcessingModal, setOpenProcessingModal] = useState(false);
+  const [selectedStatus, setSelectedStatus] = useState('');
+  const [confirmChangeStatus, setConfirmChangeStatus] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState('');
+  const [error, setError] = useState('');
+
+  const toggleProcessingModal = () => {
+    setOpenProcessingModal(!openProcessingModal);
+  }
+
+  const handleSubmit = async () => {
+    // Handle the status change logic here
+      try {
+        setLoading(true);
+        const response = await apiClient.post(`/loan/manual-verification`,
+                        {
+                            loan_id: loanInfo?.id,
+                            status: selectedStatus
+                        }
+                    );
+        setSuccess('Loan status updated successfully');
+
+      } catch (error: any) {
+        console.error('Error sending notification query:', error);
+        setError(error?.response?.data?.message || error?.message || 'An error occurred, please try again');
+      } finally {
+        setLoading(false);
+      }
+    };
+  
 
   return (
     <>
@@ -21,8 +56,127 @@ const UserLoan: React.FC<UserLoanProps> = ({loanInfo,loanHistory=false}) => {
             : loanInfo?.status === 'CLOSED' ? 'text-[#2290DF]' : loanInfo?.status === 'FAILED' ? 'text-[#9D8814]' : loanInfo?.status === 'PROCESSING' ? 'text-[#9D8814]' : 'text-[#DA3737]'
         } `}>
             <span className=''>ID {loanInfo?.id}</span>
-            <span className=''>{loanInfo?.status}</span>
+            <div className='flex justify-center items-center relative'>
+              <span className=''>{loanInfo?.status}</span>
+            {loanInfo?.status === 'PROCESSING' && (
+               <IoIosArrowDropdownCircle 
+               onClick={toggleProcessingModal}
+               className='inline text-blue-700 text-lg cursor-pointer lg:text-xl md:text-2xl ml-1'/>
+            )}
+            </div>
+           
         </p>
+    {openProcessingModal && (
+  <>
+    {/* Background Overlay */}
+    <div
+      className="fixed inset-0 bg-black bg-opacity-50 z-30"
+      onClick={() => {
+        setError('');
+        setSuccess('');
+        setConfirmChangeStatus(false);
+        setSelectedStatus('');
+        toggleProcessingModal();
+      }}
+    ></div>
+
+    {/* Dropdown Content */}
+    <div
+      className="absolute top-[67px] lg:left-[265px]  md:left-[232px] left-[191px] w-[229px] min-h-[138px] h-auto bg-white rounded-xl shadow-lg font-montserrat font-medium z-50"
+    >
+      {!confirmChangeStatus ? (
+  // Step 1: status selection + proceed
+  <>
+    <p className='text-[16px] text-[#2290DF] mt-2 font-bold w-full text-center'>
+      Change loan status
+    </p>
+    {['OPEN', 'CLOSED', 'FAILED'].map((select: any, index: number) => (
+      <button
+        key={index}
+        onClick={() => {
+          setSelectedStatus(select);
+        }}
+        className={`w-full font-montserrat text-start ml-4 font-medium text-[13px] text-[#282828] ${
+          index === 0 ? 'mt-4' : 'mt-2'
+        }`}
+      >
+        <div className="flex justify-start text-[#282828] items-center font-medium gap-6">
+          <p>{select}</p>
+          {select === selectedStatus && (
+            <Image
+              src="/images/good.png"
+              alt="good"
+              height={17}
+              width={17}
+            />
+          )}
+        </div>
+      </button>
+    ))}
+
+    {/* Continue / Proceed Button */}
+    <div className="flex justify-end text-[13px] my-2 pr-4">
+      <button
+        onClick={() => {
+          setConfirmChangeStatus(true);
+        }}
+        disabled={!selectedStatus} // prevent proceed without selection
+        className={`px-4 py-2 rounded-md text-white ${
+          selectedStatus
+            ? 'bg-blue-500 hover:bg-blue-600'
+            : 'bg-gray-300 cursor-not-allowed'
+        }`}
+      >
+        Proceed
+      </button>
+    </div>
+  </>
+) : confirmChangeStatus && (!success && !error) ? (
+  // Step 2: confirm action
+  <div className="px-4 py-6">
+    <p className="text-[#282828] text-[14px] text-center">
+      Are you sure you want to change the loan status to{" "}
+      <span className="font-bold text-[#DA3737]">{selectedStatus}</span>?
+    </p>
+    {loading && <LoadingPage />}
+    <div className="flex justify-end mt-4">
+      <button
+        onClick={() => {
+          handleSubmit();
+        }}
+        className="bg-blue-500 text-white px-4 py-2 rounded-md"
+      >
+        Confirm
+      </button>
+      <button
+        onClick={() => {
+          setConfirmChangeStatus(false);
+        }}
+        className="bg-gray-300 text-black px-4 py-2 rounded-md ml-2"
+      >
+        Cancel
+      </button>
+    </div>
+  </div>
+) : (!loading && (success || error)) ? (
+  // Step 3: show result
+  <div className="px-4 py-6 flex flex-col justify-center items-center">
+  <p
+    className={`text-[14px] font-medium ${
+      error ? 'text-red-500' : success ? 'text-blue-500' : 'text-[#282828]'
+    }`}
+  >
+    {success || error}
+  </p>
+</div>
+
+) : null}
+
+    </div>
+  </>
+)}
+
+
         <p className='text-[#282828] flex justify-between items-center mx-6 mb-2 font-semibold text-[16px] '>
             <span className=' '>Loan Tenure</span>
             <span className='font-medium text-[15px]'>{loanInfo?.interest?.period}</span>

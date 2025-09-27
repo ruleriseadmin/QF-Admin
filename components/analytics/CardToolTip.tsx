@@ -5,6 +5,7 @@ import { formatDate,formatValue } from '@/utils/loan';
 type CustomToolTipProps = {
   active?: boolean;
   payload?: any;
+  growth?: boolean;
   label?: string | undefined | any;
   toolPosition?: {
     x: number;
@@ -12,12 +13,15 @@ type CustomToolTipProps = {
   };
 };
 
-const CustomToolTip: React.FC<CustomToolTipProps> = ({ active, payload, label, toolPosition }) => {
+const CustomToolTip: React.FC<CustomToolTipProps> = ({ active, payload, label, toolPosition,growth }) => {
+  
   if (!active || !payload || !toolPosition) return null;
   const formatCurrency = (amount: number | null) => {
     if (amount === null) return '₦ 0';
     return '₦ ' + amount?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   };
+
+  
 
  
   return (
@@ -41,7 +45,7 @@ const CustomToolTip: React.FC<CustomToolTipProps> = ({ active, payload, label, t
       
         <div className="absolute top-0 px-2 left-0 w-full h-full flex flex-col ml-6  text-[#282828] z-10">
         <span className="text-[12px] text-[#3C3C4399] text-start font-bold mb-2 mt-8">
-  {formatDate(label)}
+  {growth ? label : formatDate(label)}
 </span>
           {payload[0]?.payload?.registration_count && (
             <div className="flex items-center gap-1 font-semibold text-[16px]">
@@ -125,6 +129,22 @@ const CustomToolTip: React.FC<CustomToolTipProps> = ({ active, payload, label, t
                           <Image src="/images/loanuser.png" width={20} height={20} alt="shape" />
                             <span className='text-[#828282]'>{formatValue(payload[0]?.payload?.loan_overdue_users_count)}</span>
                         </div>
+            </div>
+          )}
+          {growth && (
+                      <div className='grid grid-cols-12 gap-4 '>
+                      <div className="flex col-span-7  items-center gap-1 font-semibold text-[16px]">
+                        <span className="w-[10px] h-[10px] rounded-full bg-[#F3D55B]"></span>
+                        <span>{formatValue(payload[0]?.payload?.first_time_loans_count)}</span>
+                      </div>
+            </div>
+          )}
+          {growth  && (
+                      <div className='grid grid-cols-12 gap-4 '>
+                      <div className="flex col-span-7  items-center gap-1 font-semibold text-[16px]">
+                        <span className="w-[10px] h-[10px] rounded-full bg-[#2AA81A]"></span>
+                        <span>{formatValue(payload[0]?.payload?.growth_rate)}%</span>
+                      </ div>
             </div>
           )}
           
