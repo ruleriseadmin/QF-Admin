@@ -5,7 +5,7 @@ const nextConfig = {
         remotePatterns: [
           {
             protocol: 'https',
-            hostname: 'quick-cred-storage.s3.eu-north-1.amazonaws.com',
+            hostname: 'quick-fund-storage.s3.eu-north-1.amazonaws.com',
             pathname: '**',
           },
            
