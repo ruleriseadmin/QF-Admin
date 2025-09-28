@@ -26,6 +26,7 @@ const Chart3 = () => {
   const [openCustomCalendar, setOpenCustomCalendar] = useState(false);
   const [queryStart, setQueryStart] = useState('');
   const [queryEnd, setQueryEnd] = useState('');
+  const [success,setSuccess] = useState('');
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
               from: subDays(new Date(), 29),
               to: new Date(),
@@ -68,13 +69,14 @@ const Chart3 = () => {
         const queryString = new URLSearchParams(queryObj).toString();
         const response = await apiClient.get(`/analytics/reports?${queryString}`, {
           signal: controller.signal,
-          responseType: downloadOffer ? 'blob' : 'json',
+          responseType: 'json',
         });
         setChartData(response?.data?.data);
         if(downloadOffer){
-            saveToExcel(response);
-            setDownloadOffer(false);
-          return;
+             setSuccess(response?.data?.message || 'Report is being processed and will be emailed to you shortly.');
+              setOpenNotification(true);
+              setDownloadOffer(false);
+              return;
       }
       } catch (error: any) {
         if (error.message !== 'canceled' || error.name !== 'CanceledError') {
@@ -491,6 +493,14 @@ const Chart3 = () => {
          status='error'
         />
       )}
+
+       {success &&
+              <Notification
+                message={success}
+                toggleNotification={toggleNotification}
+                isOpen={openNotification}
+                status='success'
+              />}
     </div>
   );
 };
