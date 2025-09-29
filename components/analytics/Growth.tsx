@@ -17,7 +17,7 @@ import { formatMonthYear,formatValue } from '@/utils/loan';
 
 
 const Growth = () => {
-  const [selectedView, setSelectedView] = useState('year')
+  const [selectedView, setSelectedView] = useState('day')
   const [activeIndex, setActiveIndex] = useState<number | null>(null)
   const [toolPosition, setToolPosition] = useState<any>('')
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
@@ -27,12 +27,19 @@ const Growth = () => {
   const [openNotification, setOpenNotification] = useState(false);
   const [chartData, setChartData] = useState<any[]>([]);
   const today = new Date();
-const currentYear = today.getFullYear();
-const [year, setYear] = useState<number>(currentYear);
-const [inputYear, setInputYear] = useState<string>(String(currentYear));
-const maxYear = currentYear;
+  const currentMonth = String(today.getMonth() + 1).padStart(2, '0');
+  const currentYear = today.getFullYear();
+  const defaultMonthYear = `${currentYear}-${currentMonth}`;
 
+  const [monthYear, setMonthYear] = useState<string>(defaultMonthYear);
+  const maxMonthYear = defaultMonthYear;
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setMonthYear(e.target.value);
+  };
+
+  // Format for display
+  const formattedMonthYear = formatMonthYear(monthYear);
   
   
 
@@ -40,6 +47,18 @@ const maxYear = currentYear;
   const toggleNotification = () => {
     setOpenNotification(!openNotification);
   };
+
+  // Returns YYYY-MM-DD
+const formatDate = (date: Date) =>
+  date.toISOString().split('T')[0];      // quick ISO helper
+
+const getRangeForMonth = (yyyyMm: string) => {
+  const base = new Date(`${yyyyMm}-01`); // first day of that month
+  return {
+    start: base,       
+    end:   endOfMonth(base),       
+  };
+};
 
 
   useEffect(() => {
@@ -49,12 +68,13 @@ const maxYear = currentYear;
       try {
         const queryObj: Record<string, string> = {}; 
   
-        if (selectedView) {
+         if (selectedView) {
           queryObj.chart = selectedView;
   
-         if (year) {
-      queryObj.start_date = year.toString() === '2025' ? '' : `${year}-01-01`;
-      queryObj.end_date   = year.toString() === '2025' ? '' : `${year}-12-31`;   // ← last day of year
+         if (monthYear) {
+      const { start, end } = getRangeForMonth(monthYear);
+      queryObj.start_date = formatDate(start);
+      queryObj.end_date   = formatDate(end);   // ← last day of month
     }
           
         }
@@ -80,7 +100,7 @@ const maxYear = currentYear;
   
     fetchData();
     return () => controller.abort();
-  }, [selectedView, year]);
+  }, [selectedView, monthYear]);
   
 
 
@@ -99,12 +119,14 @@ useEffect(() => {
   }
 
 const CustomXAxisTick = ({ x, y, payload }: any) => {
-  // Extract "Jan" from "Jan, 2025"
-  const monthLabel = payload.value.split(",")[0].trim();
-  // Get current month in short form (Jan, Feb, etc.)
-  const currentMonth = new Date().toLocaleString("en-US", { month: "short" });
+  // Find the index of the current tick
+  const index = chartData.findIndex((item) => item.period === payload.value);
 
-  const isCurrentMonth = monthLabel === currentMonth;
+  // Get today's date (e.g., 20)
+  const today = new Date();
+  const todayDate = today.getDate(); // e.g., 20
+
+  const isToday = index + 1 === todayDate;
 
   return (
     <text
@@ -112,16 +134,15 @@ const CustomXAxisTick = ({ x, y, payload }: any) => {
       y={y + 15}
       textAnchor="middle"
       style={{
-        fontWeight: isCurrentMonth ? 700 : 600,
-        fill: isCurrentMonth ? "#282828" : "#787878",
-        fontSize: isCurrentMonth ? "16px" : "14px",
+        fontWeight: isToday ? 700 : 600,
+        fill: isToday ? '#282828' : '#787878',
+        fontSize: '14px',
       }}
     >
-      {monthLabel}
+      {index + 1}
     </text>
   );
 };
-
 
  
 
@@ -136,24 +157,23 @@ const CustomXAxisTick = ({ x, y, payload }: any) => {
   const handleMouseLeave = () => {
     setActiveIndex(null) // Reset active index on mouse leave
   }
-const handleYearChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  const value = e.target.value;
-  setInputYear(value); // Always update the input
+const changeMonth = (direction: 'prev' | 'next') => {
+  const [year, month] = monthYear.split('-').map(Number);
+  const date = new Date(year, month - 1); // JS months are 0-based
 
-  // Only commit when it's exactly 4 digits
-  if (/^\d{4}$/.test(value)) {
-    const newYear = Number(value);
-    if (newYear <= maxYear && newYear >= 1900) {
-      setYear(newYear);
-    }
-  }
-};
-
-const changeYear = (direction: 'prev' | 'next') => {
   if (direction === 'prev') {
-    setYear((prev) => prev - 1);
-  } else if (direction === 'next' && year < maxYear) {
-    setYear((prev) => prev + 1);
+    date.setMonth(date.getMonth() - 1);
+  } else if (direction === 'next') {
+    date.setMonth(date.getMonth() + 1);
+  }
+
+  const newMonth = String(date.getMonth() + 1).padStart(2, '0');
+  const newYear = date.getFullYear();
+  const newMonthYear = `${newYear}-${newMonth}`;
+
+  // Prevent going into the future
+  if (newMonthYear <= maxMonthYear) {
+    setMonthYear(newMonthYear);
   }
 };
 
@@ -166,17 +186,12 @@ const formattedData = chartData.map(item => ({
   first_time_loans_count: Math.abs(item.first_time_loans_count)
 }));
 
-const pieColor = ['#2AA81A', '#F3D55B'];
-const names = ['FIRST TIME CUSTOMERS', 'GROWTH RATE'];
+const pieColor = ['#2AA81A'];
+const names = ['FIRST TIME CUSTOMERS'];
 
 // Ensure chartData is defined and not empty
 const validChartData = Array.isArray(formattedData) ? formattedData : [];
 
-
-const growthUsers = validChartData.reduce(
-  (acc, item) => acc + (item?.growth_rate || 0), 
-  0
-);
 
 const firstUsers = validChartData.reduce(
   (acc, item) => acc + (item?.first_time_loans_count || 0), 
@@ -185,8 +200,8 @@ const firstUsers = validChartData.reduce(
 
 const pieData = names.map((item, index) => ({
   name: item,
-  users: index === 0 ? growthUsers : firstUsers,
-  color: pieColor[index],
+  users:firstUsers,
+  color: pieColor[0],
 
 }));
 
@@ -204,33 +219,29 @@ const pieData = names.map((item, index) => ({
             </div>
             <div className="flex items-center gap-4 text-[#464646] font-medium text-[14px]">
               <p className="flex items-center gap-1">
-                <span className="w-3 h-3 rounded-full bg-[#F3D55B]"></span>
-                <span>First Time Customers</span>
-              </p>
-              <p className="flex items-center gap-1">
                 <span className="w-3 h-3 rounded-full bg-[#2AA81A]"></span>
-                <span>Percentage Growth</span>
+                <span>First Time Customers</span>
               </p>
               
             </div>
           </div>
            {loading && <LoadingPage />}
-   <div className="flex items-center gap-4 mx-4 mt-8 text-[13px] w-full font-semibold">
+    <div className="flex items-center gap-4 mx-4 mt-8 text-[13px] w-full font-semibold">
   {/* Left Arrow */}
   <div
     className="w-[29px] cursor-pointer h-[29px] rounded-full bg-[#ECECEC] border flex items-center justify-center"
-    onClick={() => changeYear('prev')}
+    onClick={() => changeMonth('prev')}
   >
     <MdKeyboardArrowLeft className="text-[#282828] text-[18px]" />
   </div>
 
-  {/* Display Selected Year */}
-  <p className="text-[18px] text-[#282828] px-2">{year}</p>
+  {/* Display Selected Month-Year */}
+  <p className="text-[18px] text-[#282828] px-2">{formattedMonthYear}</p>
 
   {/* Right Arrow */}
   <div
     className="w-[29px] h-[29px] cursor-pointer rounded-full bg-[#ECECEC] border flex items-center justify-center"
-    onClick={() => changeYear('next')}
+    onClick={() => changeMonth('next')}
   >
     <MdKeyboardArrowRight className="text-[#282828] text-[18px]" />
   </div>
@@ -238,18 +249,18 @@ const pieData = names.map((item, index) => ({
   {/* Calendar Dropdown */}
   <div
     onClick={() => setIsCalendarOpen((prev) => !prev)}
-    className="w-[49px] h-[29px] rounded-full bg-[#ECECEC] border flex items-center justify-center"
+    className="w-[29px] h-[29px] rounded-full bg-[#ECECEC] border flex items-center justify-center"
   >
     {/* Year Dropdown */}
-  <div className="w-[60px] h-[29px] rounded-full bg-[#ECECEC] border flex items-center justify-center">
-    <input
-       type="number"
-        value={inputYear}
-        onChange={handleYearChange}
-        min="1900"
-        max={maxYear}
-      className="w-full h-full text-center bg-transparent border-none focus:outline-none"
-    />
+  <div className="relative w-full h-full">
+      <input
+        type="month"
+        value={monthYear}
+        onChange={handleChange}
+        min="2020-01"
+        max={maxMonthYear}
+        className="w-full h-full opacity-0 absolute left-0 top-0 cursor-pointer"
+      />
       <MdKeyboardArrowDown className="text-[#282828] text-[18px] absolute right-[6px] top-1/2 -translate-y-1/2 pointer-events-none" />
     </div>
   </div>
@@ -285,16 +296,25 @@ const pieData = names.map((item, index) => ({
 />
 <YAxis
   tickFormatter={(tick) => {
-    const formatted = formatCurrency(tick);
-   
+    
+    const tickToDisplay = Math.abs(tick); 
+    const formatted = formatCurrency(tickToDisplay);
+    const parts = formatted.split(',');
+    if (parts.length === 3) {
+      const extra = formatted.split(',')[1] === '000'? '' : `,${formatted.split(',')[1].toString().slice(0, 1)}`;
+      return formatted.split(',')[0] + extra;
+    } else if (parts.length === 2) {
+      // This means the number is in thousands
+      return formatted.split(',')[0] ;
+    }
     return formatted; // For smaller numbers without commas
   }}
   type="number"
-  
-  tickCount={15}
+  domain={['dataMin', 'dataMax']}
+  tickCount={8}
   tickLine={false}
   axisLine={false}
-  domain={['dataMin', 'dataMax']}
+  
   
   style={{
     fontSize: '14px',
@@ -312,16 +332,9 @@ const pieData = names.map((item, index) => ({
  
 />
               
+              
               <Bar
                 dataKey="first_time_loans_count"
-                stackId="a"
-                
-                fill="#F3D55B"
-                barSize={10}
-                onMouseEnter={(data, index) => handleMouseEnter(data, index)}
-              />
-              <Bar
-                dataKey="growth_rate"
                 stackId="a"
                 fill="#2AA81A"
                 barSize={10}
@@ -352,7 +365,7 @@ const pieData = names.map((item, index) => ({
             cy="50%"
             outerRadius={80}
             labelLine={false}
-            label={renderCustomizedLabel}
+            label={(props) => renderCustomizedLabel({ ...props, growth: true })}
           >
             {pieData?.map((entry:any, index:number) => (
               <Cell key={`cell-${index}`} fill={entry.color} stroke={entry.color} />
