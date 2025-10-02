@@ -20,6 +20,8 @@ const UserInfo:React.FC<UserInfoProps> = ({info,setRefetch}) => {
     const [error, setError] = useState('');
     const [notificationOpen, setNotificationOpen] = useState(false);
     const toggleNotification = () => setNotificationOpen(!notificationOpen);
+    const [success,setSuccess] = useState('');
+   
 
 
     // Function to fetch images
@@ -52,7 +54,7 @@ const UserInfo:React.FC<UserInfoProps> = ({info,setRefetch}) => {
     }, [imageData, proceedToFetch]);
 
     //function to refetch bvn details
-    const refetchBvnDetails = async () => {
+    const refetchBvnDetails = async (ignoreStored=false) => {
         try {
             const idToUse = window.location.pathname === '/customers' || window.location.pathname === '/kyc' ? info?.id : info?.user_id
             const bvn = info?.bvn_details?.bvn
@@ -61,10 +63,14 @@ const UserInfo:React.FC<UserInfoProps> = ({info,setRefetch}) => {
             const response = await apiClient.post(`/account/nin-bvn`,
                 {
                     user_id: idToUse,
-                    bvn: bvn
+                    bvn: bvn,
+                    ignore_stored:ignoreStored
                 }
             );
             setRefetch && setRefetch(true);
+            setSuccess(response?.data?.message || 'BVN details updated successfully');
+            setNotificationOpen(true);
+
         } catch (error: any) {
             console.log('Error fetching BVN details:', error);
             setError(error?.response?.data?.message || error?.message || 'An error occurred, please try again');
@@ -184,10 +190,18 @@ const UserInfo:React.FC<UserInfoProps> = ({info,setRefetch}) => {
         <div className='mr-10 mt-5'>
         <p className='text-[#282828] flex justify-between items-center  mb-2 font-semibold text-[16px] '>
               <span className=' '>Number</span>
+
               <span className='flex items-center'>
                 <LuRefreshCw 
                 className='inline mr-2 text-[#1922AB] cursor-pointer'
-                onClick={refetchBvnDetails}
+                onClick={() => refetchBvnDetails(false)}
+                />
+                <LuRefreshCw 
+                className='inline mr-2 text-[#DA3737] cursor-pointer'
+                onClick={() => {
+                    
+                    refetchBvnDetails(true)
+                }}
                 />
                 <span className='font-medium text-[15px]'>{info?.bvn_details?.bvn}</span>
               </span>
@@ -233,6 +247,10 @@ const UserInfo:React.FC<UserInfoProps> = ({info,setRefetch}) => {
           <p className='text-[#282828] flex justify-between items-center  mb-2 font-semibold text-[16px] '>
               <span className=' '>E Mandate</span>
               <span className='font-medium text-[15px]'>{bank?.authorization_code || '-'}</span>
+          </p>
+          <p className='text-[#282828] flex justify-between items-center  mb-2 font-semibold text-[16px] '>
+              <span className=' '>Default</span>
+              <span className='font-medium text-[15px]'>{bank?.default === true ? 'YES' : 'NO' }</span>
           </p>
         </div>
 
@@ -284,6 +302,14 @@ const UserInfo:React.FC<UserInfoProps> = ({info,setRefetch}) => {
               toggleNotification={toggleNotification}
             />
           )}
+         {notificationOpen && success && (
+                <Notification
+                  isOpen={notificationOpen}
+                  toggleNotification={toggleNotification}
+                  message={success}
+                  status='success'
+                  />
+              )}
 
     </div>
   )
