@@ -48,26 +48,45 @@ const TransactionFilter: React.FC<TransactionFilterProps> = ({ isOpen, toggleTra
     
   };
 
-  // Apply filter by updating query params
-  const applyFilter = () => {
-    const queryParams: Record<string, string> = {};
+ // Apply filter by updating query params
+const applyFilter = () => {
+  //  Preserve existing query params in the URL
+  const params = new URLSearchParams(window.location.search);
 
-   if (selectedTransactionType) queryParams.type = selectedTransactionType.join(',');
-    if (selectedStatus) queryParams.status = selectedStatus;
-    if (transactionID) queryParams.id = String(transactionID);
-    if (Amount.min) queryParams.amountFrom = Amount.min;
-    if (Amount.max) queryParams.amountTo = Amount.max;
-    if(searchCreatedDate.startDate) {
-      queryParams.start = searchCreatedDate.startDate;
-    }
-    if(searchCreatedDate.endDate) {
-      queryParams.end = searchCreatedDate.endDate;
-    }
+  // Update or add new filters
+  if (selectedTransactionType?.length > 0) {
+    params.set('type', selectedTransactionType.join(','));
+  }
 
-  
-    router.push(`${window.location.pathname}?${new URLSearchParams(queryParams).toString()}`);
-    toggleTransactionFilter();
-  };
+  if (selectedStatus) {
+    params.set('status', selectedStatus);
+  }
+
+  if (transactionID) {
+    params.set('id', String(transactionID));
+  }
+
+  if (Amount.min) {
+    params.set('amountFrom', String(Amount.min));
+  }
+
+  if (Amount.max) {
+    params.set('amountTo', String(Amount.max));
+  }
+
+  if (searchCreatedDate.startDate) {
+    params.set('start', searchCreatedDate.startDate);
+  }
+
+  if (searchCreatedDate.endDate) {
+    params.set('end', searchCreatedDate.endDate);
+  }
+
+  // Push updated query
+  router.push(`${window.location.pathname}?${params.toString()}`);
+  toggleTransactionFilter();
+};
+
 
   // Reset filter by removing query params
   const handleResetFilter = () => {

@@ -66,76 +66,58 @@ const CustomerFilter: React.FC<CustomerFilterProps> = ({ isOpen, toggleCustomerF
   ];
 
   // Apply filter by updating query params
-  const applyFilter = () => {
-    const queryParams: Record<string, string> = {};
-    if(loanStatus) {
-      queryParams.status = loanStatus;
-    }
-    if(creditScore) {
-      queryParams.creditScore = creditScore;
-    }
-    if(regSource) {
-      queryParams.source = regSource;
-    }
-    if(employmentStatus) {
-      queryParams.employmentStatus = employmentStatus;
-    }
-    if(loaned) {
-      queryParams.loaned = 'true';
-    }
-    if(noLoan) {
-      queryParams.noLoan = 'true';
-    }
-    if(blacklisted) {
-      queryParams.blacklisted = 'true';
-    }
-    if(crc) {
-      queryParams.crc = crc;
-    }
-    if(defaulted) {
-      queryParams.defaulted = 'true';
-    }
-    if(neverDefaulted) {
-      queryParams.neverDefaulted = 'true';
-    }
-    if(fullyRegistered) {
-      queryParams.fullyRegistered = 'true';
-    }
-    if(partiallyRegistered) {
-      queryParams.partiallyRegistered = 'true';
-    }
-    if(unDefined) {
-      queryParams.unDefined = 'true';
-    }
-    if(closedLoan) queryParams.closedLoansCustomers = 'true';
-    if(ageRange.from && ageRange.to) {
-      queryParams.ageFrom = ageRange.from;
-      queryParams.ageTo = ageRange.to;
-    }
-    if (loanAmount.min) queryParams.amountFrom = loanAmount.min;
-    if (loanAmount.max) queryParams.amountTo = loanAmount.max;
-    if(searchDueDate.startDate && searchDueDate.endDate) {
-      queryParams.dueStart = searchDueDate.startDate;
-      queryParams.dueEnd = searchDueDate.endDate;
-    }
-    if(searchCreatedDate.startDate) {
-      queryParams.start = searchCreatedDate.startDate;
-    }
-    if(searchCreatedDate.endDate) {
-      queryParams.end = searchCreatedDate.endDate;
-    }
-     if(searchCreatedTime.startTime) {
-       queryParams.start = `${searchCreatedDate.startDate} ${searchCreatedTime.startTime}`;
-    }
-    if(searchCreatedTime.endTime) {
-      queryParams.end = `${searchCreatedDate.endDate} ${searchCreatedTime.endTime}`;
-    }
-    if(loanCount.from) queryParams.loanCountFrom = loanCount.from;
-    if(loanCount.to) queryParams.loanCountTo = loanCount.to;
-   
-    router.push(`${window.location.pathname}?${new URLSearchParams(queryParams).toString()}`);
-    toggleCustomerFilter();
-  };
+const applyFilter = () => {
+  // ✅ Start with existing query params
+  const params = new URLSearchParams(window.location.search);
+
+  // ✅ Update or add new filters
+  if (loanStatus) params.set('status', loanStatus);
+  if (creditScore) params.set('creditScore', creditScore);
+  if (regSource) params.set('source', regSource);
+  if (employmentStatus) params.set('employmentStatus', employmentStatus);
+  if (loaned) params.set('loaned', 'true');
+  if (noLoan) params.set('noLoan', 'true');
+  if (blacklisted) params.set('blacklisted', 'true');
+  if (crc) params.set('crc', crc);
+  if (defaulted) params.set('defaulted', 'true');
+  if (neverDefaulted) params.set('neverDefaulted', 'true');
+  if (fullyRegistered) params.set('fullyRegistered', 'true');
+  if (partiallyRegistered) params.set('partiallyRegistered', 'true');
+  if (unDefined) params.set('unDefined', 'true');
+  if (closedLoan) params.set('closedLoansCustomers', 'true');
+
+  if (ageRange.from && ageRange.to) {
+    params.set('ageFrom', ageRange.from);
+    params.set('ageTo', ageRange.to);
+  }
+
+  if (loanAmount.min) params.set('amountFrom', loanAmount.min);
+  if (loanAmount.max) params.set('amountTo', loanAmount.max);
+
+  if (searchDueDate.startDate && searchDueDate.endDate) {
+    params.set('dueStart', searchDueDate.startDate);
+    params.set('dueEnd', searchDueDate.endDate);
+  }
+
+  if (searchCreatedDate.startDate) params.set('start', searchCreatedDate.startDate);
+  if (searchCreatedDate.endDate) params.set('end', searchCreatedDate.endDate);
+
+  if (searchCreatedTime.startTime) {
+    params.set('start', `${searchCreatedDate.startDate} ${searchCreatedTime.startTime}`);
+  }
+  if (searchCreatedTime.endTime) {
+    params.set('end', `${searchCreatedDate.endDate} ${searchCreatedTime.endTime}`);
+  }
+
+  if (loanCount.from) params.set('loanCountFrom', loanCount.from);
+  if (loanCount.to) params.set('loanCountTo', loanCount.to);
+
+  // ✅ Push combined queries
+  router.push(`${window.location.pathname}?${params.toString()}`);
+
+  toggleCustomerFilter();
+};
+
 
   // Reset filter by removing query params
   const handleResetFilter = () => {

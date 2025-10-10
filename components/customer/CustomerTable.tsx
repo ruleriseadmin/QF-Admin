@@ -73,11 +73,8 @@ const CustomerTable: React.FC = () => {
    const amountFrom = searchParams.get('amountFrom') || '';
   const amountTo = searchParams.get('amountTo') || '';
   const send_push_notification = searchParams.get('send_push_notification') || '';
+  const [sendPushNotification, setSendPushNotification ] = useState(false)
   const closedLoansCustomers = searchParams.get('closedLoansCustomers') || '';
-  const [pushNotificationStatus, setPushNotificationStatus] = useState('');
-  const [pushNotificationTitle, setPushNotificationTitle] = useState('');
-  const [pushNotificationBody, setPushNotificationBody] = useState('');
-  const [showPushNotification, setShowPushNotification] = useState(false);
   const [success, setSuccess] = useState('');
   const [refetch,setRefetch] = useState<boolean>(false)
 
@@ -94,17 +91,9 @@ useEffect(() => {
     });
   }
   if(send_push_notification){
-    setShowPushNotification(true);
+   setSendPushNotification(true)
   }
-  if(pushStatus){
-    setPushNotificationStatus(pushStatus);
-  }
-  if(pushTitle){
-    setPushNotificationTitle(pushTitle);
-  }
-  if(pushBody){
-    setPushNotificationBody(pushBody);
-  }
+  
   if(blacklisted){
     setSelectedSelection('blacklisted')
   }
@@ -132,7 +121,7 @@ useEffect(() => {
       endDate: ''
     })
   }
-}, [start, end, blacklisted,closedLoansCustomers,showPushNotification,pushBody,pushTitle,defaulted, loaned, noLoan, reset, neverDefaulted,fullyRegistered,partiallyRegistered]);
+}, [start, end, pushBody, pushTitle, pushStatus, send_push_notification, blacklisted,closedLoansCustomers,defaulted, loaned, noLoan, reset, neverDefaulted,fullyRegistered,partiallyRegistered]);
 
 //cleanup url
 useEffect(() => {
@@ -142,16 +131,7 @@ useEffect(() => {
 
 },[start,end])
 
-//cleanup url
-useEffect(() => {
-  if(showPushNotification){
-    router.replace(window.location.pathname)
-  }
 
-},[showPushNotification])
-
-
-    
 
   const toggleNotification = () => {
     setNotificationOpen(!notificationOpen);
@@ -208,16 +188,11 @@ useEffect(() => {
         }if(selectedSelection === 'closedLoan'){
           queryObj.last_loan_closed = 'true';
         }
-         if(showPushNotification){
+        if(sendPushNotification){
           queryObj.send_push_notification = 'true';
-        }
-        if(pushNotificationStatus){
-          queryObj.push_status = pushStatus;
-        }
-        if(pushNotificationTitle){
           queryObj.title = pushTitle;
-        }if(pushNotificationBody){
           queryObj.body = pushBody;
+          queryObj.status = pushStatus;
         }
         if(selectedSelection === 'fullyRegistered'){
           queryObj.fully_registered = 'true';
@@ -269,13 +244,10 @@ useEffect(() => {
               setNotificationOpen(true);
               setDownloadExcel(false);
               return;
-          }if(showPushNotification){
+          }if(sendPushNotification){
              setSuccess(response?.data?.message || 'Notification sent successfully');
               setNotificationOpen(true);
-              setShowPushNotification(false);
-              setPushNotificationBody('')
-              setPushNotificationStatus('')
-              setPushNotificationTitle('')
+            setSendPushNotification(false);
               return;
           }
         
@@ -299,7 +271,7 @@ useEffect(() => {
        }
       }
        fetchCustomers();
-     }, [page, selectedSort,loanCountTo,amountFrom, amountTo,refetch,loanCountFrom, showPushNotification, paginate, crc, searchDate, selectedSelection,downloadExcel, triggerSearch, status, creditScore, source,unDefined, ageFrom, ageTo, employmentStatus,  dueStart, dueEnd]);
+     }, [page, selectedSort,loanCountTo,amountFrom, sendPushNotification, amountTo,refetch,loanCountFrom,  paginate, crc, searchDate, selectedSelection,downloadExcel, triggerSearch, status, creditScore, source,unDefined, ageFrom, ageTo, employmentStatus,  dueStart, dueEnd]);
   
 
 
@@ -412,10 +384,7 @@ const resetQuery = () => {
   setSelectedSort('new');
   setTriggerSearch(false);
   setDownloadExcel(false);
-   setShowPushNotification(false);
-    setPushNotificationBody('')
-    setPushNotificationStatus('')
-    setPushNotificationTitle('')
+  setSendPushNotification(false);
   setPaginate(true);
   
   // Reset query parameters in the URL

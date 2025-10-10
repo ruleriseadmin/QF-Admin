@@ -64,10 +64,7 @@ const pushStatus = searchParams.get('pushStatus') || '';
 const pushTitle = searchParams.get('pushTitle') || '';
 const pushBody = searchParams.get('pushBody') || '';
 const send_push_notification = searchParams.get('send_push_notification') || '';
-const [pushNotificationStatus, setPushNotificationStatus] = useState('');
-const [pushNotificationTitle, setPushNotificationTitle] = useState('');
-const [pushNotificationBody, setPushNotificationBody] = useState('');
-const [showPushNotification, setShowPushNotification] = useState(false);
+const [sendPushNotification, setSendPushNotification] = useState(false);
 const [loanHistory, setLoanHistory] = useState<any[]>([]);
 const [success, setSuccess] = useState('');
 const [usersId, setUsersId] = useState<any>([]);
@@ -97,17 +94,8 @@ const toggleLoanHistory = () => {
       setSearchDate((prev) => ({...prev, endDate: end}));
     if(loanStatus)
       setSelectedSelection(loanStatus);
-    if(send_push_notification){
-    setShowPushNotification(true);
-  }
-  if(pushStatus){
-    setPushNotificationStatus(pushStatus);
-  }
-  if(pushTitle){
-    setPushNotificationTitle(pushTitle);
-  }
-  if(pushBody){
-    setPushNotificationBody(pushBody);
+    if(send_push_notification ){
+       setSendPushNotification(true)
   }
     if(reset){
       setSearchDate({
@@ -116,24 +104,16 @@ const toggleLoanHistory = () => {
       })
     }
     
-  }, [start, end, showPushNotification,pushBody,pushTitle,pushBody,  loanStatus, reset]);
+  }, [start, end, pushBody, pushTitle,  send_push_notification,  loanStatus, reset]);
   
+
+
   //cleanup url
   useEffect(() => {
     if(start && end){
       router.replace(window.location.pathname)
     }
   },[start,end])
-
-  //cleanup url
-  useEffect(() => {
-    if(showPushNotification){
-      router.replace(window.location.pathname)
-    }
-  
-  },[showPushNotification])
-      
-  
 
   const toggleFilter = () => setOpenFilter(!openFilter);
 
@@ -247,16 +227,11 @@ const toggleLoanHistory = () => {
           queryObj.loan_count = `${loanCountFrom}${' - '}${loanCountTo}`;
         }
         
-         if(showPushNotification){
+        if(sendPushNotification){
           queryObj.send_push_notification = 'true';
-        }
-        if(pushNotificationStatus){
-          queryObj.push_status = pushStatus;
-        }
-        if(pushNotificationTitle){
           queryObj.title = pushTitle;
-        }if(pushNotificationBody){
           queryObj.body = pushBody;
+          queryObj.status = pushStatus;
         }
         
         if (createdToday) {
@@ -281,13 +256,10 @@ const toggleLoanHistory = () => {
               setNotificationOpen(true);
               setDownloadExcel(false);
               return;
-      }if(showPushNotification){
+      }if(sendPushNotification){
              setSuccess(response?.data?.message || 'Notification sent successfully');
               setNotificationOpen(true);
-              setShowPushNotification(false);
-              setPushNotificationBody('')
-              setPushNotificationStatus('')
-              setPushNotificationTitle('')
+             setSendPushNotification(false);
               return;
           }
         setLoans(response?.data?.data?.loans || []);
@@ -311,9 +283,8 @@ const toggleLoanHistory = () => {
     };
   
     fetchLoans();
-  
-    return () => controller.abort();
-  }, [page, triggerSearch, showPushNotification,refetch,  searchDate.startDate,source,downloadExcel,  searchDate.endDate, selectedSelection, itemsPerPage, selectedSort, due_start, loanCountTo,loanCountFrom, due_end, dpd, amountFrom, amountTo, createdToday, dueToday]);
+
+  }, [page, triggerSearch, sendPushNotification,refetch,  searchDate.startDate,source,downloadExcel,  searchDate.endDate, selectedSelection, itemsPerPage, selectedSort, due_start, loanCountTo,loanCountFrom, due_end, dpd, amountFrom, amountTo, createdToday, dueToday]);
   
   
 
@@ -325,10 +296,7 @@ const toggleLoanHistory = () => {
     setSelectedSort('new');
     setTriggerSearch(false);
     setPaginate(true);
-    setShowPushNotification(false);
-    setPushNotificationBody('')
-    setPushNotificationStatus('')
-    setPushNotificationTitle('')
+    setSendPushNotification(false);
     // Reset query parameters in the URL
     router.replace(window.location.pathname);
     

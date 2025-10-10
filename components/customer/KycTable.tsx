@@ -69,10 +69,7 @@ const KycTable: React.FC = () => {
   const pushTitle = searchParams.get('pushTitle') || '';
   const pushBody = searchParams.get('pushBody') || '';
   const send_push_notification = searchParams.get('send_push_notification') || '';
-  const [pushNotificationStatus, setPushNotificationStatus] = useState('');
-  const [pushNotificationTitle, setPushNotificationTitle] = useState('');
-  const [pushNotificationBody, setPushNotificationBody] = useState('');
-  const [showPushNotification, setShowPushNotification] = useState(false);
+const [sendPushNotification, setSendPushNotification ] = useState(false)
   const [success, setSuccess] = useState(''); 
  const loanCountTo = searchParams.get('loanCountTo');
  const loanCountFrom = searchParams.get('loanCountFrom');
@@ -93,17 +90,8 @@ useEffect(() => {
   if(blacklisted){
     setSelectedSelection('blacklisted')
   }
-   if(send_push_notification){
-    setShowPushNotification(true);
-  }
-  if(pushStatus){
-    setPushNotificationStatus(pushStatus);
-  }
-  if(pushTitle){
-    setPushNotificationTitle(pushTitle);
-  }
-  if(pushBody){
-    setPushNotificationBody(pushBody);
+    if(send_push_notification){
+   setSendPushNotification(true)
   }
   if(defaulted){
     setSelectedSelection('defaulted')
@@ -128,7 +116,7 @@ useEffect(() => {
       endDate: ''
     })
   }
-}, [start, end, blacklisted,,showPushNotification,pushBody,pushTitle,pushBody, defaulted, loaned, noLoan, reset, neverDefaulted,fullyRegistered,partiallyRegistered]);
+}, [start, end, blacklisted,,send_push_notification,pushBody, pushTitle, pushStatus,  defaulted, loaned, noLoan, reset, neverDefaulted,fullyRegistered,partiallyRegistered]);
 
 //cleanup url
 useEffect(() => {
@@ -137,14 +125,6 @@ useEffect(() => {
   }
 },[start,end])
 
-//cleanup url
-useEffect(() => {
-  if(showPushNotification){
-    router.replace(window.location.pathname)
-  }
-
-},[showPushNotification])
-    
 
   const toggleNotification = () => {
     setNotificationOpen(!notificationOpen);
@@ -184,16 +164,11 @@ useEffect(() => {
         if(kycStage){
           queryObj.stage = kycStage;
         }
-         if(showPushNotification){
+        if(sendPushNotification){
           queryObj.send_push_notification = 'true';
-        }
-        if(pushNotificationStatus){
-          queryObj.push_status = pushStatus;
-        }
-        if(pushNotificationTitle){
           queryObj.title = pushTitle;
-        }if(pushNotificationBody){
           queryObj.body = pushBody;
+          queryObj.status = pushStatus;
         }
   
        if(selectedSelection === 'blacklisted'){
@@ -258,13 +233,10 @@ useEffect(() => {
               setNotificationOpen(true);
               setDownloadExcel(false);
               return;
-          }if(showPushNotification){
+          }if(sendPushNotification){
              setSuccess(response?.data?.message || 'Notification sent successfully');
               setNotificationOpen(true);
-              setShowPushNotification(false);
-              setPushNotificationBody('')
-              setPushNotificationStatus('')
-              setPushNotificationTitle('')
+             setSendPushNotification(false);
               return;
           }
         
@@ -288,7 +260,7 @@ useEffect(() => {
        }
       }
        fetchCustomers();
-     }, [page, selectedSort,kycStage,refetch,loanCountTo,loanCountFrom, paginate,showPushNotification, searchDate, selectedSelection,downloadExcel, triggerSearch, status, creditScore, source,unDefined, ageFrom, ageTo, employmentStatus,  dueStart, dueEnd]);
+     }, [page, selectedSort,kycStage,refetch,loanCountTo,loanCountFrom, paginate,sendPushNotification, searchDate, selectedSelection,downloadExcel, triggerSearch, status, creditScore, source,unDefined, ageFrom, ageTo, employmentStatus,  dueStart, dueEnd]);
   
 
 
@@ -407,10 +379,7 @@ const resetQuery = () => {
   setTriggerSearch(false);
   setDownloadExcel(false);
   setPaginate(true);
-   setShowPushNotification(false);
-    setPushNotificationBody('')
-    setPushNotificationStatus('')
-    setPushNotificationTitle('')
+   setSendPushNotification(false);
   
   // Reset query parameters in the URL
   router.replace(window.location.pathname);

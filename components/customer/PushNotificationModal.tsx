@@ -26,53 +26,27 @@ const PushNotificationModal: React.FC<PushNotificationProps> = ({ isOpen, toggle
     setOpenNotification(!openNotification);
   };
 
-  /*const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    try{
-    setLoading(true);
-    console.log(usersId);
-    const response = await apiClient.post('/notification/send', {
-      notification_type: 'bulk',
-       title,
-      status,
-      body,
-      recipients:usersId });
-    setSuccess(response?.data?.message || 'Notification sent successfully');
-    setOpenNotification(true);
-    }catch(error:any){
-      console.error('Error sending notification:', error);
-      setError( error?.response?.data.message || 'Error sending notification');
-      setOpenNotification(true);
-    }finally{
-      setLoading(false);
-    }
-
-    // Clear fields after submission
-    setStatus('');
-    setTitle('');
-    setBody('');
-  };*/
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    try {
-       const queryParams: Record<string, string> = {};
-       queryParams.send_push_notification = 'true';
-      if (status) queryParams.pushStatus = status;
-      if (title) queryParams.pushTitle = title;
-      if (body) queryParams.pushBody = body;
-        router.push(`${window.location.pathname}?${new URLSearchParams(queryParams).toString()}`);
-   togglePushNotification();
-    } catch (error: any) {
-      console.error('Error sending notification query:', error);
-  
-    } 
+  e.preventDefault();
+  try {
+    // Start with existing query params
+    const params = new URLSearchParams(window.location.search);
 
-    // Clear fields after submission
-    setStatus('');
-    setTitle('');
-    setBody('');
-  };
+    //  Add or overwrite new values
+    params.set('send_push_notification', 'true');
+    if (status) params.set('pushStatus', status);
+    if (title) params.set('pushTitle', title);
+    if (body) params.set('pushBody', body);
+
+    // Update URL without losing previous filters
+    router.push(`${window.location.pathname}?${params.toString()}`);
+
+    togglePushNotification();
+  } catch (error: any) {
+    console.error('Error sending notification query:', error);
+  }
+};
+
 
   return (
     <div
