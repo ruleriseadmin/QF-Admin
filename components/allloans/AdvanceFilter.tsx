@@ -54,44 +54,52 @@ const AdvanceFilter: React.FC<AdvanceFilterProps> = ({ isOpen, toggleAdvanceFilt
 
   // Apply filter by updating query params
   const applyFilter = () => {
-    const queryParams: Record<string, string> = {};
-    const excludeLoanStatus = ['due_today', 'applied_today'];
+  //  Preserve existing query params in the URL
+  const params = new URLSearchParams(window.location.search);
 
-    if (selectedLoanStatus.length > 0) {
-      queryParams.loanStatus = selectedLoanStatus.join(',');
-    }
-    
-    if(todayCreatedLoan) queryParams.createdToday = 'true';
-    if(todayDueLoan) queryParams.dueToday = 'true';
-    if (dpd) queryParams.dpd = String(dpd);
-    if (loanAmount.min) queryParams.amountFrom = loanAmount.min;
-    if (loanAmount.max) queryParams.amountTo = loanAmount.max;
-    if (searchDueDate.startDate ) {
-      queryParams.due_start = searchDueDate.startDate;
-    }
-    if (searchDueDate.endDate) {
-      queryParams.due_end = searchDueDate.endDate;
-    }
-    if(source) queryParams.source = source;
-    if(searchCreatedDate.startDate) {
-      queryParams.start = searchCreatedDate.startDate;
-    }
-    if(searchCreatedDate.endDate) {
-      queryParams.end = searchCreatedDate.endDate;
-    }
-    if(searchCreatedTime.startTime) {
-       queryParams.start = `${searchCreatedDate.startDate} ${searchCreatedTime.startTime}`;
-    }
-    if(searchCreatedTime.endTime) {
-      queryParams.end = `${searchCreatedDate.endDate} ${searchCreatedTime.endTime}`;
-    }
-    if(loanCount.from) queryParams.loanCountFrom = loanCount.from;
-    if(loanCount.to) queryParams.loanCountTo = loanCount.to;
-  
-    // Push query params to the URL
-    router.push(`${window.location.pathname}?${new URLSearchParams(queryParams).toString()}`);
-    toggleAdvanceFilter(); // Close modal after applying filter
-  };
+  // Loan Status (array)
+  if (selectedLoanStatus.length > 0) {
+    params.set('loanStatus', selectedLoanStatus.join(','));
+  }
+
+  //  Boolean filters
+  if (todayCreatedLoan) params.set('createdToday', 'true');
+  if (todayDueLoan) params.set('dueToday', 'true');
+  if (dpd) params.set('dpd', String(dpd));
+
+  //  Loan amount range
+  if (loanAmount.min) params.set('amountFrom', String(loanAmount.min));
+  if (loanAmount.max) params.set('amountTo', String(loanAmount.max));
+
+  // Due Date Range
+  if (searchDueDate.startDate) params.set('due_start', searchDueDate.startDate);
+  if (searchDueDate.endDate) params.set('due_end', searchDueDate.endDate);
+
+  //  Created Source
+  if (source) params.set('source', source);
+
+  // Created Date Range
+  if (searchCreatedDate.startDate) params.set('start', searchCreatedDate.startDate);
+  if (searchCreatedDate.endDate) params.set('end', searchCreatedDate.endDate);
+
+  // Created Time Combined with Date
+  if (searchCreatedTime.startTime) {
+    params.set('start', `${searchCreatedDate.startDate} ${searchCreatedTime.startTime}`);
+  }
+  if (searchCreatedTime.endTime) {
+    params.set('end', `${searchCreatedDate.endDate} ${searchCreatedTime.endTime}`);
+  }
+
+  //  Loan Count
+  if (loanCount.from) params.set('loanCountFrom', String(loanCount.from));
+  if (loanCount.to) params.set('loanCountTo', String(loanCount.to));
+
+  //  Push final filter params to URL without page reload
+  router.push(`${window.location.pathname}?${params.toString()}`);
+
+  // Close filter modal after Apply
+  toggleAdvanceFilter();
+};
 
   // Reset filter by removing query params
   const handleResetFilter = () => {

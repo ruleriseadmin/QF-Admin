@@ -84,7 +84,7 @@ const UserInfo:React.FC<UserInfoProps> = ({info,setRefetch}) => {
   return (
     <div className=' min-h-[200px]  h-auto ml-6 overflow-hidden '>
       <div className='flex justify-start gap-6 items-center my-4'>
-        <div className='flex flex-col '>
+        <div className='flex flex-col z-30'>
         <p className='text-[#1922AB] text-[16px] font-medium mb-4'>Bvn Image</p>
         <div className='w-[150px] h-[150px] rounded-[12px] relative'>
           <Image src={imageData?.bvn_url || "/images/default.jpg"} alt='bvn' fill className='rounded-[12px]' />
@@ -92,7 +92,7 @@ const UserInfo:React.FC<UserInfoProps> = ({info,setRefetch}) => {
 
         </div>
         <div className='flex flex-col '>
-        <p className='text-[#1922AB] text-[16px] font-medium mb-4'>Liveness Image</p>
+        <p className='text-[#1922AB] text-[16px] font-medium mb-4 '>Liveness Image</p>
         <div className='w-[150px] h-[150px] rounded-[12px] relative'>
           <Image src={imageData?.liveliness_url || "/images/default.jpg"} alt='bvn' fill className='rounded-[12px]' />
         </div>
@@ -185,8 +185,17 @@ const UserInfo:React.FC<UserInfoProps> = ({info,setRefetch}) => {
         </div>
         {loading && <LoadingPage/>}
         {/* BVN Details */}
-
-        <p className='text-[#1922AB] text-[16px] font-semibold mt-8'>BVN Details</p>
+        <div className='flex justify-start items-center mt-8'>
+            <p className='text-[#1922AB] text-[16px] font-semibold '>BVN Details</p>
+            <LuRefreshCw 
+                className='inline ml-2 text-[#DA3737] mt-1  cursor-pointer'
+                onClick={() => {
+                    
+                    refetchBvnDetails(true)
+                }}
+                />
+        </div>
+        
         <div className='mr-10 mt-5'>
         <p className='text-[#282828] flex justify-between items-center  mb-2 font-semibold text-[16px] '>
               <span className=' '>Number</span>
@@ -196,13 +205,7 @@ const UserInfo:React.FC<UserInfoProps> = ({info,setRefetch}) => {
                 className='inline mr-2 text-[#1922AB] cursor-pointer'
                 onClick={() => refetchBvnDetails(false)}
                 />
-                <LuRefreshCw 
-                className='inline mr-2 text-[#DA3737] cursor-pointer'
-                onClick={() => {
-                    
-                    refetchBvnDetails(true)
-                }}
-                />
+                
                 <span className='font-medium text-[15px]'>{info?.bvn_details?.bvn}</span>
               </span>
           </p>
@@ -233,7 +236,16 @@ const UserInfo:React.FC<UserInfoProps> = ({info,setRefetch}) => {
       {bankToDisplay?.map((bank:any, index:number) => (
         <div className='mr-10 mt-8' key={index}>
         <p className='text-[#282828] flex justify-between items-center  mb-2 font-semibold text-[16px] '>
-              <span className='text-[#1922AB] '>Bank Account Details ({index + 1})</span>
+            
+                  <span className='text-[#1922AB] '>Bank Account Details ({index + 1})</span>
+                  {bank?.default && 
+                  <p className='text-[#FFFFFF] flex justify-center w-[79px] h-[28px] bg-[#28A537] rounded-[22px] text-[16px] '>
+              <span className=' '>Default</span>
+              
+          </p>}
+          </p>
+           <p className='text-[#282828] flex justify-between items-center  mb-2 font-semibold text-[16px] '>
+              <span className=' '>Bank name</span>
               <span className='font-medium text-[15px]'>{bank?.bank_name}</span>
           </p>
           <p className='text-[#282828] flex justify-between items-center  mb-2 font-semibold text-[16px] '>
@@ -248,10 +260,7 @@ const UserInfo:React.FC<UserInfoProps> = ({info,setRefetch}) => {
               <span className=' '>E Mandate</span>
               <span className='font-medium text-[15px]'>{bank?.authorization_code || '-'}</span>
           </p>
-          <p className='text-[#282828] flex justify-between items-center  mb-2 font-semibold text-[16px] '>
-              <span className=' '>Default</span>
-              <span className='font-medium text-[15px]'>{bank?.default === true ? 'YES' : 'NO' }</span>
-          </p>
+          
         </div>
 
       ))}

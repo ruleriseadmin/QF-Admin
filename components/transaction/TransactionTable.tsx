@@ -56,10 +56,8 @@ const pushStatus = searchParams.get('pushStatus') || '';
   const pushTitle = searchParams.get('pushTitle') || '';
   const pushBody = searchParams.get('pushBody') || '';
   const send_push_notification = searchParams.get('send_push_notification') || '';
-  const [pushNotificationStatus, setPushNotificationStatus] = useState('');
-  const [pushNotificationTitle, setPushNotificationTitle] = useState('');
-  const [pushNotificationBody, setPushNotificationBody] = useState('');
-  const [showPushNotification, setShowPushNotification] = useState(false);
+  
+  const [sendPushNotification, setSendPushNotification] = useState(false);
   const [success, setSuccess] = useState('');
   const [openPushNotification, setOpenPushNotification] = useState(false);
 
@@ -78,20 +76,11 @@ const pushStatus = searchParams.get('pushStatus') || '';
         endDate: ''
       })
     }
-     if(send_push_notification){
-    setShowPushNotification(true);
-  }
-  if(pushStatus){
-    setPushNotificationStatus(pushStatus);
-  }
-  if(pushTitle){
-    setPushNotificationTitle(pushTitle);
-  }
-  if(pushBody){
-    setPushNotificationBody(pushBody);
+      if(send_push_notification ){
+       setSendPushNotification(true)
   }
     
-  }, [start, end, type, reset,showPushNotification,pushBody,pushTitle,]);
+  }, [start, end, type, reset,send_push_notification,pushBody,pushTitle,]);
 
 //cleanup url
 useEffect(() => {
@@ -106,13 +95,6 @@ useEffect(() => {
     setNotificationOpen(!notificationOpen);
   };
 
-  //cleanup url
-  useEffect(() => {
-    if(showPushNotification){
-      router.replace(window.location.pathname)
-    }
-  
-  },[showPushNotification])
   
   const togglePushNotification = () => {
     setOpenPushNotification(!openPushNotification);
@@ -169,16 +151,11 @@ useEffect(() => {
         if(status){
           queryObj.status = status;
         }
-         if(showPushNotification){
+          if(sendPushNotification){
           queryObj.send_push_notification = 'true';
-        }
-        if(pushNotificationStatus){
-          queryObj.push_status = pushStatus;
-        }
-        if(pushNotificationTitle){
           queryObj.title = pushTitle;
-        }if(pushNotificationBody){
           queryObj.body = pushBody;
+          queryObj.status = pushStatus;
         }
         if(downloadExcel){
           queryObj.download_excel = 'true';
@@ -210,13 +187,11 @@ useEffect(() => {
               setDownloadExcel(false);
               return;
               
-        }if(showPushNotification){
+        }if(sendPushNotification){
              setSuccess(response?.data?.message || 'Notification sent successfully');
               setNotificationOpen(true);
-              setShowPushNotification(false);
-              setPushNotificationBody('')
-              setPushNotificationStatus('')
-              setPushNotificationTitle('')
+              setSendPushNotification(false);
+              
               return;
           }
         
@@ -241,7 +216,7 @@ useEffect(() => {
       };
 
     fetchTransactions();
-  }, [page, triggerSearch,paginate, searchDate,showPushNotification, selectedSelection, selectedSort, id, downloadExcel, amountFrom, amountTo, status]);
+  }, [page, triggerSearch,paginate, searchDate,sendPushNotification, selectedSelection, selectedSort, id, downloadExcel, amountFrom, amountTo, status]);
 
 
   
@@ -306,10 +281,8 @@ useEffect(() => {
     setSelectedSort('new');
     setTriggerSearch(false);
     setDownloadExcel(false);
-    setShowPushNotification(false);
-    setPushNotificationBody('')
-    setPushNotificationStatus('')
-    setPushNotificationTitle('')
+    setSendPushNotification(false);
+   
     setPaginate(true);
     // Reset query parameters in the URL
     router.replace(window.location.pathname);
