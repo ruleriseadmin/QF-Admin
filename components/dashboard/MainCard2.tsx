@@ -31,18 +31,21 @@ const MainCards2: React.FC<MainCards2Props> = ({ stats,cardView,setCardView ,loa
     start:'',
     end:''
   });
+  const [showTotalInterestOverdue, setShowTotalInterestOverdue] = useState(false);
   const [openTotalInterestOverdueCalender, setOpenTotalInterestOverdueCalender] = useState(false);
   const [totalOpenLoanPI, setTotalOpenLoanPI] = useState(0);
   const [totalOpenLoanPIDate, setTotalOpenLoanPIDate] = useState({
     start:'',
     end:''
   });
+  const [showTotalOpenLoanPI, setShowTotalOpenLoanPI] = useState(false);
   const [openTotalOpenLoanPIDateCalender, setOpenTotalOpenLoanPIDateCalender] = useState(false);
   const [totalOpenLoanPrincipal, setTotalOpenLoanPrincipal] = useState(0);
   const [totalOpenLoanPrincipalDate, setTotalOpenLoanPrincipalDate] = useState({
     start:'',
     end:''
   });
+  const [showTotalOpenLoanPrincipal, setShowTotalOpenLoanPrincipal] = useState(false);
   const [openTotalOpenLoanPrincipalCalender, setOpenTotalOpenLoanPrincipalCalender] = useState(false);
   
  const formatDate = (dateString:string) => {
@@ -146,8 +149,10 @@ useEffect(() => {
                 alt='Hero Image'
                 className="object-cover w-[46px] h-[46px] lg:w-[46px] lg:h-[46px] md:w-6 md:h-6"
 />
-                    <p className='text-[#282828] font-bold text-[22px] lg:text-[22px] md:text-[13px]'>{formatCurrency(totalInterestOverdue || 0)}</p>
-                    <FaEye className='text-[#5A5A5A] text-[15px] lg:text-[15px] md:text-[13px]'/>
+                    <p className='text-[#282828] font-bold text-[22px] lg:text-[22px] md:text-[13px]'>{showTotalInterestOverdue ? formatCurrency(totalInterestOverdue || 0) : '*****'}</p>
+                    <FaEye
+                    onClick={() => setShowTotalInterestOverdue(prev => !prev)} 
+                    className='text-[#5A5A5A] text-[15px] lg:text-[15px] md:text-[13px] cursor-pointer'/>
                 </div>
             </div>
             {loading && <LoadingPage />}
@@ -209,8 +214,8 @@ useEffect(() => {
                 alt='Hero Image'
                 className="object-cover w-[46px] h-[46px] lg:w-[46px] lg:h-[46px] md:w-6 md:h-6"
 />
-                    <p className='text-[#282828] font-bold text-[22px] lg:text-[22px] md:text-[13px]'>{formatCurrency(totalOpenLoanPI  || 0)}</p>
-                    <FaEye className='text-[#5A5A5A] text-[15px] lg:text-[15px] md:text-[13px]'/>
+                    <p className='text-[#282828] font-bold text-[22px] lg:text-[22px] md:text-[13px]'>{showTotalOpenLoanPI ? formatCurrency(totalOpenLoanPI  || 0) : "*****"}</p>
+                    <FaEye className='text-[#5A5A5A] text-[15px] lg:text-[15px] md:text-[13px] cursor-pointer' onClick={() => setShowTotalOpenLoanPI(prev => !prev)}/>
                 </div>
             </div>
           {/* Card 5 */}
@@ -271,8 +276,8 @@ useEffect(() => {
                 alt='Hero Image'
                 className="object-cover w-[46px] h-[46px] lg:w-[46px] lg:h-[46px] md:w-6 md:h-6"
 />
-                    <p className='text-[#282828] font-bold text-[22px] lg:text-[22px] md:text-[13px]'>{formatCurrency(totalOpenLoanPrincipal  || 0)}</p>
-                    <FaEye className='text-[#5A5A5A] text-[15px] lg:text-[15px] md:text-[13px]'/>
+                    <p className='text-[#282828] font-bold text-[22px] lg:text-[22px] md:text-[13px]'>{showTotalOpenLoanPrincipal ? formatCurrency(totalOpenLoanPrincipal  || 0) : "*****"}</p>
+                    <FaEye className='text-[#5A5A5A] text-[15px] lg:text-[15px] md:text-[13px] cursor-pointer' onClick={() => setShowTotalOpenLoanPrincipal(prev => !prev)}/>
                 </div>
             </div>
 

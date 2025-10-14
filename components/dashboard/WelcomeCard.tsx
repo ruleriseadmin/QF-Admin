@@ -10,6 +10,7 @@ import { Calendar as C } from "@/components/dashboard/DashboardCalender";
 import Image from 'next/image';
 import { subDays } from 'date-fns';
 import { DateRange } from "react-day-picker";
+import { FaEye } from "react-icons/fa6";
 
 type WelcomeCardProps = {
   stats: any;
@@ -41,6 +42,24 @@ const WelcomeCard: React.FC<WelcomeCardProps> = ({ stats }) => {
 
   const [disbursedSearchDate, setDisbursedSearchDate] = useState({ startDate: '', endDate: '' });
   const [collectedSearchDate, setCollectedSearchDate] = useState({ startDate: '', endDate: '' });
+  const [showUnique,setShowUnique] = useState(false)
+  const [showDisbursed,setShowDisbursed] = useState(false)
+  const [showCollected,setShowCollected] = useState(false)
+
+  //toggle unique
+  const toggleUnique = () => {
+    setShowUnique(!showUnique)
+  }
+
+  //toggle disbursed
+  const toggleDisbursed = () => {
+    setShowDisbursed(!showDisbursed)
+  }
+
+  //toggle collected
+  const toggleCollected = () => {
+    setShowCollected(!showCollected)
+  }
 
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: subDays(new Date(), 29),
@@ -213,7 +232,13 @@ const WelcomeCard: React.FC<WelcomeCardProps> = ({ stats }) => {
                                   )}
               </div>
             </div>
-            <p className="mt-2 font-bold mb-6 text-[#FFFFFF] text-[24px]">{formatValue(totalUniqueCustomers)}</p>
+            <div className='flex items-center mb-6 mt-2 '>
+            <p className="font-bold  text-[#FFFFFF] text-[24px]">{showUnique ? formatValue(totalUniqueCustomers) : '*****'}</p>
+            <FaEye 
+            onClick={toggleUnique}
+            className='text-[#5A5A5A] text-[15px] lg:text-[15px] md:text-[13px] ml-2 cursor-pointer'/>
+            </div>
+            
             <div className="flex md:flex-wrap items-center text-[12px] gap-2">
               {selection.map((method,index) => (
                 <button
@@ -303,7 +328,13 @@ const WelcomeCard: React.FC<WelcomeCardProps> = ({ stats }) => {
                                   )}
               </div>
             </div>
-            <p className="mt-2 font-bold mb-6 text-[#FFFFFF] text-[24px]">{formatCurrency(staticDisbursed)}</p>
+            <div className='flex items-center mb-6 mt-2 '>
+            <p className="font-bold  text-[#FFFFFF] text-[24px]">{ showDisbursed ? formatCurrency(staticDisbursed) : '*****'}</p>
+            <FaEye
+            onClick={toggleDisbursed}
+             className='text-[#5A5A5A] text-[15px] lg:text-[15px] md:text-[13px] ml-2 cursor-pointer'/>
+            </div>
+
             <div className="flex md:flex-wrap items-center text-[12px] gap-2">
               {selection.map((method,index) => (
                 <button
@@ -322,7 +353,7 @@ const WelcomeCard: React.FC<WelcomeCardProps> = ({ stats }) => {
                               
             </div>
             <div className="flex justify-start gap-5 items-center md:my-4 mb-6 ">
-                <p className="text-[#BEBEBE] lg:text-[18px] text-[18px] md:text-[14px] font-bold mt-3 ml-1">{formatCurrency(totalDisbursed)}</p>
+                <p className="text-[#BEBEBE] lg:text-[18px] text-[18px] md:text-[14px] font-bold mt-3 ml-1">{showDisbursed ? formatCurrency(totalDisbursed) : '*****'}</p>
                 
                   <div className="flex justify-center items-center gap-1 pt-3 ">
                     <HiMiniUsers className="text-lg text-[#BEBEBE]" />
@@ -390,7 +421,12 @@ const WelcomeCard: React.FC<WelcomeCardProps> = ({ stats }) => {
                                     )}
               </div>
             </div>
-            <p className="mt-2 font-bold mb-6 text-[#FFFFFF] text-[24px]">{formatCurrency(staticCollected)}</p>
+             <div className='flex items-center mb-6 mt-2 '>
+            <p className="font-bold  text-[#FFFFFF] text-[24px]">{showCollected ? formatCurrency(staticCollected) : '*****'}</p>
+            <FaEye 
+            onClick={toggleCollected}
+            className='text-[#5A5A5A] text-[15px] lg:text-[15px] md:text-[13px] ml-2 cursor-pointer'/>
+            </div>
             <div className="flex md:flex-wrap items-center text-[12px] gap-2">
               {selection.map((method,index) => (
                 <button
@@ -409,13 +445,14 @@ const WelcomeCard: React.FC<WelcomeCardProps> = ({ stats }) => {
               
             </div>
             <div className="flex justify-start gap-5 items-center md:my-4 mb-6 ">
-                <p className="text-[#BEBEBE] lg:text-[18px] text-[18px] md:text-[14px] font-bold mt-3 ml-1">{formatCurrency(Math.abs(totalCollected))}</p>
+                <p className="text-[#BEBEBE] lg:text-[18px] text-[18px] md:text-[14px] font-bold mt-3 ml-1">{showCollected ? formatCurrency(Math.abs(totalCollected)) : '*****'}</p>
                 
                   <div className="flex justify-center items-center gap-1 pt-3 ">
                     <HiMiniUsers className="text-lg text-[#BEBEBE]" />
                     <p className="text-[#BEBEBE] text-[15px] font-bold ">
                      {totalCollectedCount}
                     </p>
+
                   </div>
                 
               </div>

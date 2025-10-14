@@ -35,6 +35,13 @@ const MainCards3: React.FC<MainCards3Props> = ({ stats, cardView, setCardView,lo
   const [loanOpenCount, setLoanOpenCount] = useState(0);
   const [loanClosedCount, setLoanClosedCount] = useState(0);
 
+  const [showLoanDueToday, setShowLoanDueToday] = useState(false);
+  const [showLoanDueTodayPrincipal, setShowLoanDueTodayPrincipal] = useState(false);
+  const [showLoanDueTodayInterest, setShowLoanDueTodayInterest] = useState(false);
+  const [showLoanDisbursedCount, setShowLoanDisbursedCount] = useState(false);
+  const [showLoanOpenCount, setShowLoanOpenCount] = useState(false);
+  const [showLoanClosedCount, setShowLoanClosedCount] = useState(false);
+
   const [loanDueTodayDate, setLoanDueTodayDate] = useState({ start: '', end: '' });
   const [loanDueTodayPrincipalDate, setLoanDueTodayPrincipalDate] = useState({ start: '', end: '' });
   const [loanDueTodayInterestDate, setLoanDueTodayInterestDate] = useState({ start: '', end: '' });
@@ -157,8 +164,10 @@ useEffect(() => {
                 alt='Hero Image'
                 className="object-cover w-[46px] h-[46px] lg:w-[46px] lg:h-[46px] md:w-6 md:h-6"
 />
-                    <p className='text-[#282828] font-bold text-[22px] lg:text-[22px] md:text-[13px]'>{formatCurrency(loanDueToday  || 0)}</p>
-                    <FaEye className='text-[#5A5A5A] text-[15px] lg:text-[15px] md:text-[13px]'/>
+                    <p className='text-[#282828] font-bold text-[22px] lg:text-[22px] md:text-[13px]'>{showLoanDueToday ? formatCurrency(loanDueToday  || 0) : "*****"}</p>
+                    <FaEye 
+                    onClick={() => setShowLoanDueToday(prev => !prev)}
+                    className='text-[#5A5A5A] text-[15px] lg:text-[15px] md:text-[13px] cursor-pointer'/>
                 </div>
             </div>
             {/* Card 2 */}
@@ -217,8 +226,9 @@ useEffect(() => {
                 alt='Hero Image'
                 className="object-cover w-[46px] h-[46px] lg:w-[46px] lg:h-[46px] md:w-6 md:h-6"
 />
-                    <p className='text-[#282828] font-bold text-[22px] lg:text-[22px] md:text-[13px]'>{formatCurrency(loanDueTodayPrincipal || 0)}</p>
-                    <FaEye className='text-[#5A5A5A] text-[15px] lg:text-[15px] md:text-[13px]'/>
+                    <p className='text-[#282828] font-bold text-[22px] lg:text-[22px] md:text-[13px]'>{showLoanDueTodayPrincipal ? formatCurrency(loanDueTodayPrincipal || 0) : "*****"}</p>
+                    <FaEye className='text-[#5A5A5A] text-[15px] lg:text-[15px] md:text-[13px] cursor-pointer' 
+                    onClick={() => setShowLoanDueTodayPrincipal(prev => !prev)}/>
                 </div>
             </div>
             
@@ -279,8 +289,8 @@ useEffect(() => {
                 alt='Hero Image'
                 className="object-cover w-[46px] h-[46px] lg:w-[46px] lg:h-[46px] md:w-6 md:h-6"
 />
-                    <p className='text-[#282828] font-bold text-[22px] lg:text-[22px] md:text-[13px]'>{formatCurrency(loanDueTodayInterest || 0)}</p>
-                    <FaEye className='text-[#5A5A5A] text-[15px] lg:text-[15px] md:text-[13px]'/>
+                    <p className='text-[#282828] font-bold text-[22px] lg:text-[22px] md:text-[13px]'>{showLoanDueTodayInterest ? formatCurrency(loanDueTodayInterest || 0) : "*****"}</p>
+                    <FaEye className='text-[#5A5A5A] text-[15px] lg:text-[15px] md:text-[13px] cursor-pointer' onClick={() => setShowLoanDueTodayInterest(prev => !prev)}/>
                 </div>
             </div>
             {/* Card 4 */}
@@ -339,8 +349,8 @@ useEffect(() => {
                 alt='Hero Image'
                 className="object-cover w-[46px] h-[46px] lg:w-[46px] lg:h-[46px] md:w-6 md:h-6"
 />
-                    <p className='text-[#282828] font-bold text-[22px] lg:text-[22px] md:text-[13px]'>{loanDisbursedCount}</p>
-                    <FaEye className='text-[#5A5A5A] text-[15px] lg:text-[15px] md:text-[13px]'/>
+                    <p className='text-[#282828] font-bold text-[22px] lg:text-[22px] md:text-[13px]'>{showLoanDisbursedCount ? loanDisbursedCount : "*****"}</p>
+                    <FaEye className='text-[#5A5A5A] text-[15px] lg:text-[15px] md:text-[13px] cursor-pointer' onClick={() => setShowLoanDisbursedCount(prev => !prev)}/>
                 </div>
             </div>
           {/* Card 5 */}
@@ -399,8 +409,8 @@ useEffect(() => {
                 alt='Hero Image'
                 className="object-cover w-[46px] h-[46px] lg:w-[46px] lg:h-[46px] md:w-6 md:h-6"
 />
-                    <p className='text-[#282828] font-bold text-[22px] lg:text-[22px] md:text-[13px]'>{loanOpenCount}</p>
-                    <FaEye className='text-[#5A5A5A] text-[15px] lg:text-[15px] md:text-[13px]'/>
+                    <p className='text-[#282828] font-bold text-[22px] lg:text-[22px] md:text-[13px]'>{showLoanOpenCount ? loanOpenCount : "*****"}</p>
+                    <FaEye className='text-[#5A5A5A] text-[15px] lg:text-[15px] md:text-[13px] cursor-pointer' onClick={() => setShowLoanOpenCount(prev => !prev)}/>
                 </div>
             </div>
 
@@ -460,8 +470,10 @@ useEffect(() => {
                 alt='Hero Image'
                 className="object-cover w-[46px] h-[46px] lg:w-[46px] lg:h-[46px] md:w-6 md:h-6"
 />
-                    <p className='text-[#282828] font-bold text-[22px] lg:text-[22px] md:text-[13px]'>{loanClosedCount}</p>
-                    <FaEye className='text-[#5A5A5A] text-[15px] lg:text-[15px] md:text-[13px]'/>
+                    <p className='text-[#282828] font-bold text-[22px] lg:text-[22px] md:text-[13px]'>{showLoanClosedCount ? loanClosedCount : '*****'}</p>
+                    <FaEye className='text-[#5A5A5A] text-[15px] lg:text-[15px] md:text-[13px] cursor-pointer'
+                    onClick={() => setShowLoanClosedCount(prev => !prev)}
+                    />
                 </div>
             </div>
       </div>

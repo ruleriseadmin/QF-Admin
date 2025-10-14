@@ -32,36 +32,42 @@ const LastCards: React.FC<LastCardsProps> = ({ stats,cardView,setCardView,loadin
     start:'',
     end:''
   });
+  const [showTotalPenalty, setShowTotalPenalty] = useState(false);
   const [openTotalPenaltyCalender, setOpentotalPenaltyCalender] = useState(false);
   const [penaltyDue, setPenaltyDue] = useState(0);
   const [penaltyDueDate, setPenaltyDueDate] = useState({
     start:'',
     end:''
   });
+  const [showPenaltyDue, setShowPenaltyDue] = useState(false);
   const [openPenaltyDueCalender, setOpenPenaltyDueCalender] = useState(false);
   const [penaltyCollected, setPenaltyCollected] = useState(0);
   const [penaltyCollectedDate, setPenaltyCollectedDate] = useState({
     start:'',
     end:''
   });
+  const [showPenaltyCollected, setShowPenaltyCollected] = useState(false);
   const [openPenaltyCollectedCalender, setOpenPenaltyCollectedCalender] = useState(false);
   const [penaltyCount, setPenaltyCount] = useState(0);
   const [penaltyCountDate, setPenaltyCountDate] = useState({
     start:'',
     end:''
   });
+  const [showPenaltyCount, setShowPenaltyCount] = useState(false);
   const [openPenaltyCountCalender, setOpenPenaltyCountCalender] = useState(false);
   const [penaltyDueCount, setPenaltyDueCount] = useState(0);
   const [penaltyDueCountDate, setPenaltyDueCountDate] = useState({
     start:'',
     end:''
   });
+  const [showPenaltyDueCount,setShowPenaltyDueCount] = useState(false);
   const [openPenaltyDueCountCalender, setOpenPenaltyDueCountCalender] = useState(false);
   const [totalOpenLoanInterest, setTotalOpenLoanInterest] = useState(0);
   const [totalOpenLoanInterestDate, setTotalOpenLoanInterestDate] = useState({
     start:'',
     end:''
   });
+  const [showTotalOpenLoanInterest, setShowTotalOpenLoanInterest] = useState(false);
   const [openTotalOpenLoanInterestCalender, setOpenTotalOpenLoanInterestCalender] = useState(false);
   
  
@@ -181,8 +187,8 @@ useEffect(() => {
                 alt='Hero Image'
                 className="object-cover w-[46px] h-[46px] lg:w-[46px] lg:h-[46px] md:w-6 md:h-6"
 />
-                    <p className='text-[#282828] font-bold text-[22px] lg:text-[22px] md:text-[13px]'>{formatCurrency(totalPenalty || 0)}</p>
-                    <FaEye className='text-[#5A5A5A] text-[15px] lg:text-[15px] md:text-[13px]'/>
+                    <p className='text-[#282828] font-bold text-[22px] lg:text-[22px] md:text-[13px]'>{ showTotalPenalty ? formatCurrency(totalPenalty || 0) : "*****"}</p>
+                    <FaEye className='text-[#5A5A5A] text-[15px] lg:text-[15px] md:text-[13px] cursor-pointer' onClick={() => setShowTotalPenalty(prev => !prev)}/>
                 </div>
             </div>
 
@@ -243,8 +249,8 @@ useEffect(() => {
                 alt='Hero Image'
                 className="object-cover w-[46px] h-[46px] lg:w-[46px] lg:h-[46px] md:w-6 md:h-6"
 />
-                    <p className='text-[#282828] font-bold text-[22px] lg:text-[22px] md:text-[13px]'>{formatCurrency(penaltyDue || 0)}</p>
-                    <FaEye className='text-[#5A5A5A] text-[15px] lg:text-[15px] md:text-[13px]'/>
+                    <p className='text-[#282828] font-bold text-[22px] lg:text-[22px] md:text-[13px]'>{ showPenaltyDue ? formatCurrency(penaltyDue || 0) : "*****"}</p>
+                    <FaEye className='text-[#5A5A5A] text-[15px] lg:text-[15px] md:text-[13px] cursor-pointer' onClick={() => setShowPenaltyDue(prev => !prev)}/>
                 </div>
             </div>
             
@@ -306,8 +312,8 @@ useEffect(() => {
                 alt='Hero Image'
                 className="object-cover w-[46px] h-[46px] lg:w-[46px] lg:h-[46px] md:w-6 md:h-6"
 />
-                    <p className='text-[#282828] font-bold text-[22px] lg:text-[22px] md:text-[13px]'>{formatCurrency(Math.abs(penaltyCollected) || 0)}</p>
-                    <FaEye className='text-[#5A5A5A] text-[15px] lg:text-[15px] md:text-[13px]'/>
+                    <p className='text-[#282828] font-bold text-[22px] lg:text-[22px] md:text-[13px]'>{ showPenaltyCollected ? formatCurrency(Math.abs(penaltyCollected) || 0) : "*****"}</p>
+                    <FaEye className='text-[#5A5A5A] text-[15px] lg:text-[15px] md:text-[13px] cursor-pointer' onClick={() => setShowPenaltyCollected(prev => !prev)}/>
                 </div>
             </div>
 
@@ -369,8 +375,10 @@ useEffect(() => {
                 alt='Hero Image'
                 className="object-cover w-[46px] h-[46px] lg:w-[46px] lg:h-[46px] md:w-6 md:h-6"
 />
-                    <p className='text-[#282828] font-bold text-[22px] lg:text-[22px] md:text-[13px]'>{penaltyCount}</p>
-                    <FaEye className='text-[#5A5A5A] text-[15px] lg:text-[15px] md:text-[13px]'/>
+                    <p className='text-[#282828] font-bold text-[22px] lg:text-[22px] md:text-[13px]'>{showPenaltyCount ? penaltyCount : '*****'}</p>
+                    <FaEye className='text-[#5A5A5A] text-[15px] lg:text-[15px] md:text-[13px] cursor-pointer' 
+                    onClick={() => setShowPenaltyCount(prev => !prev)}
+                    />
                 </div>
             </div>
           {/* Card 5 */}
@@ -430,8 +438,10 @@ useEffect(() => {
                 alt='Hero Image'
                 className="object-cover w-[46px] h-[46px] lg:w-[46px] lg:h-[46px] md:w-6 md:h-6"
 />
-                    <p className='text-[#282828] font-bold text-[22px] lg:text-[22px] md:text-[13px]'>{penaltyDueCount}</p>
-                    <FaEye className='text-[#5A5A5A] text-[15px] lg:text-[15px] md:text-[13px]'/>
+                    <p className='text-[#282828] font-bold text-[22px] lg:text-[22px] md:text-[13px]'>{ showPenaltyDueCount ? penaltyDueCount : '*****'}</p>
+                    <FaEye className='text-[#5A5A5A] text-[15px] lg:text-[15px] md:text-[13px] cursor-pointer'
+                    onClick={() => setShowPenaltyDueCount(prev => !prev)}
+                    />
                 </div>
             </div>
                                     {/* Card 6 */}
@@ -492,8 +502,8 @@ useEffect(() => {
                 alt='Hero Image'
                 className="object-cover w-[46px] h-[46px] lg:w-[46px] lg:h-[46px] md:w-6 md:h-6"
 />
-                    <p className='text-[#282828] font-bold text-[22px] lg:text-[22px] md:text-[13px]'>{formatCurrency(totalOpenLoanInterest || 0)}</p>
-                    <FaEye className='text-[#5A5A5A] text-[15px] lg:text-[15px] md:text-[13px]'/>
+                    <p className='text-[#282828] font-bold text-[22px] lg:text-[22px] md:text-[13px]'>{ showTotalOpenLoanInterest ? formatCurrency(totalOpenLoanInterest || 0) : "*****"}</p>
+                    <FaEye className='text-[#5A5A5A] text-[15px] lg:text-[15px] md:text-[13px] cursor-pointer' onClick={() => setShowTotalOpenLoanInterest(prev => !prev)}/>
                 </div>
             </div>
       </div>
