@@ -10,8 +10,9 @@ import Notification from '@/components/Notification';
 type UserInfoProps = {
     info: any;
     setRefetch?: React.Dispatch<React.SetStateAction<boolean>>;
+    bvnSlide?: boolean;
 }
-const UserInfo:React.FC<UserInfoProps> = ({info,setRefetch}) => {
+const UserInfo:React.FC<UserInfoProps> = ({info,setRefetch,bvnSlide}) => {
     const [imageData, setImageData] = useState<any>([]);
     const bankToDisplay = info?.bank_accounts?.length ? info?.bank_accounts : [info?.destination_bank_account]
     const cards = info?.card_tokenization?.length ? info?.card_tokenization : []
@@ -27,7 +28,7 @@ const UserInfo:React.FC<UserInfoProps> = ({info,setRefetch}) => {
     // Function to fetch images
     const fetchImageData = async () => {
         try {
-            const response = await apiClient.get(`/customer/verification_images/${window.location.pathname === '/customers' || window.location.pathname === '/kyc' ? info?.id : info?.user_id}`);
+            const response = await apiClient.get(`/customer/verification_images/${window.location.pathname === '/customers' || window.location.pathname === '/kyc' || bvnSlide ? info?.id : info?.user_id}`);
             const images = response?.data?.data || {};
 
             setImageData(images);
@@ -56,7 +57,7 @@ const UserInfo:React.FC<UserInfoProps> = ({info,setRefetch}) => {
     //function to refetch bvn details
     const refetchBvnDetails = async (ignoreStored=false) => {
         try {
-            const idToUse = window.location.pathname === '/customers' || window.location.pathname === '/kyc' ? info?.id : info?.user_id
+            const idToUse = window.location.pathname === '/customers' || window.location.pathname === '/kyc' || bvnSlide ? info?.id : info?.user_id
             const bvn = info?.bvn_details?.bvn
             if(!bvn || !idToUse) return
             setLoading(true)

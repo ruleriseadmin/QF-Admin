@@ -9,6 +9,8 @@ import apiClient from '@/utils/apiClient';
 import {useRouter} from 'next/navigation';
 import LoadingPage from '@/app/loading';
 import Kyc from '../customer/KycSlide';
+import Image from 'next/image';
+import { FaCaretDown } from "react-icons/fa";
 
 type SideModalProps = {
   isOpen: boolean;
@@ -17,6 +19,7 @@ type SideModalProps = {
   toggleType:string;
   user:any;
   setRefetch?: React.Dispatch<React.SetStateAction<boolean>>;
+  bvnSlide?:boolean;
 };
 
 const LoanSlide: React.FC<SideModalProps> = ({
@@ -26,6 +29,7 @@ const LoanSlide: React.FC<SideModalProps> = ({
     toggleType,
     user,
   setRefetch,
+  bvnSlide = false
 }) => {
   
     
@@ -39,7 +43,16 @@ const [openKyC, setOpenKyC] = useState(false);
   const [amount,setAmount] = useState<number>(0)
   const [showBlacklistModal, setShowBlacklistModal] = useState(false);
   const router = useRouter();
-  const [error, setError] = useState<string | null>(null);
+    const [success, setSuccess] = useState('');
+    const [error, setError] = useState('');
+  
+  
+  const [openBankModal,setOpenBankModal] = useState(false);
+
+  //toggle bank modal
+  const toggleBankModal = () => {
+    setOpenBankModal(!openBankModal);
+  }
 
   const dataToDisplay = user?.loans
   ?.sort((a: any, b: any) => b.id - a.id) // Sort by id in descending order
@@ -78,7 +91,7 @@ useEffect(() => {
   
 const blacklistUser = async () => {
   const idToBlacklist =
-    window.location.pathname === '/customers' || window.location.pathname === '/kyc' ? user?.id : user?.user_id;
+    window.location.pathname === '/customers' || window.location.pathname === '/kyc' || bvnSlide ? user?.id : user?.user_id;
 
   if (!idToBlacklist) {
     console.log('User ID is required');
@@ -118,11 +131,12 @@ const blacklistUser = async () => {
   }
 };
 
+
+
 //toggle kyc
 const toggleKyc = () => {
   setOpenKyC(!openKyC);
 }
-
 
 
 //toggle loan history
@@ -140,12 +154,12 @@ const toggleLoanHistory = () => {
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className={`loanSlide-content  md:left-2/4 lg:left-1/4 lg:ml-20 z-20  lg:w-[541px] md:w-9/12 w-full overflow-hidden min-h-screen h-auto ${
+        className={`loanSlide-content  md:left-2/4 lg:left-1/4 lg:ml-20 z-50  lg:w-[541px] md:w-9/12 w-full overflow-hidden min-h-screen h-auto ${
           isExiting ? 'loan-exit' : 'loan-enter'
         }`}
       >
         {/* Modal Content */}
-        <div className={`w-full bg-[#FFFFFF] fixed z-0 h-auto`}>
+        <div className={`w-full bg-[#FFFFFF] fixed  h-auto`}>
         <div className="flex justify-end items-center mt-1 mr-2  ">
                     <button onClick={toggleLoanSlide} className="">
                       <IoClose className="text-navfont rounded-full bg-[#ECECEC] text-3xl mt-2 mr-2 p-1 font-bold" />
@@ -154,7 +168,7 @@ const toggleLoanHistory = () => {
         {toggleType === 'loan' && (
             <>
             <div className='ml-4'>
-            <p className='text-[18px] font-bold text-[#282828] my-2'>{window.location.pathname === '/customers' ? 'Loan History' : 'Loan Details'}</p>
+            <p className='text-[18px] font-bold text-[#282828] my-2'>{window.location.pathname === '/customers' || bvnSlide || window.location.pathname === '/kyc' ? 'Loan History' : 'Loan Details'}</p>
             <p className='text-[16px] font-medium text-[#282828] my-2'>{`${user.profile?.first_name} ${user.profile?.last_name}`}, {user.phone_number || user.profile?.phone_number}</p>
             {window.location.pathname === '/customers' ? (
                <div className='flex justify-start gap-8 my-6 items-center '>
@@ -214,7 +228,7 @@ const toggleLoanHistory = () => {
                 >
                     KYC
                 </button>
-                {(window.location.pathname === '/loans' || window.location.pathname === '/dashboard')&& (
+                {(window.location.pathname === '/loans' || (window.location.pathname === '/dashboard' && !bvnSlide))&& (
                   <button
                   onClick={toggleLoanHistory}
                   className='bg-[#1922AB] font-semibold text-[15px] px-4 py-2 w-[129px] h-[40px] text-[#FFFFFF] rounded-[22px] '
@@ -223,6 +237,57 @@ const toggleLoanHistory = () => {
                   </button>
 
                 )}
+            <div className='flex justify-start items-center'>
+ 
+{openBankModal && ReactDOM.createPortal(
+  <>
+    <div
+      className="fixed inset-0 bg-black bg-opacity-30 z-[10000]"
+      onClick={() => {
+        setError('');
+        setSuccess('');
+        toggleBankModal();
+      }}
+    ></div>
+
+    <div
+      className="fixed top-[90px] left-[45%] 
+                 min-w-[250px] bg-white rounded-xl shadow-lg 
+                 font-montserrat font-medium z-[10001] p-4 "
+    >
+      <div className="flex flex-col gap-2">
+        {user?.bank_accounts?.map((bank: any, index: number) => (
+          <label
+            key={index}
+            className="flex items-center gap-3 text-[14px] text-[#282828] cursor-pointer"
+          >
+            <input
+              type="radio"
+              name="primaryBank"
+              value={bank.id}
+              className="cursor-pointer accent-[#2290DF] w-[20px] pb-2 h-[20px] text-[#C4C4C4]"
+            />
+            <span>{bank.bank_name} - {bank?.account_number?.slice(0, 4)}</span>
+          </label>
+        ))}
+      </div>
+
+      <div className="flex justify-end mt-3">
+         <button
+                  
+                  className='bg-[#282828] font-semibold text-[15px] flex justify-center items-center min-w-[161px] w-auto h-[40px] px-4 text-[#FFFFFF] rounded-[22px] '
+                  >
+                      Make Default bank
+                  </button>
+      </div>
+    </div>
+  </>,
+  document.body
+)}
+
+</div>
+
+                
             {loading && <LoadingPage />}
             
             </div>
@@ -232,7 +297,7 @@ const toggleLoanHistory = () => {
     </div>
 
     {/* Scrollable Loan Cards Section */}
-    <div className={`relative ${toggleType === 'loan' && (window.location.pathname === '/customers' || window.location.pathname === '/kyc') ? 'mt-[190px] overflow-y-auto pb-10' : toggleType === 'loan' && window.location.pathname === '/loans' ? 'mt-[150px] overflow-y-auto pb-10' : 'mt-[120px] overflow-auto'} z-0 h-[calc(100vh-170px)]`}>
+    <div className={`relative ${toggleType === 'loan' && (window.location.pathname === '/customers' || window.location.pathname === '/kyc') ? 'mt-[290px] overflow-y-auto pb-10' : toggleType === 'loan' && window.location.pathname === '/loans' ? 'mt-[150px] overflow-y-auto pb-10' : 'mt-[120px] overflow-auto'} z-0 h-[calc(100vh-170px)]`}>
   {toggleType === 'loan' ? (
     window.location.pathname === '/customers' ||  window.location.pathname === '/kyc' ? (
       dataToDisplay?.map((loan: any, index: number) => (
@@ -242,24 +307,14 @@ const toggleLoanHistory = () => {
       <UserLoan loanInfo={user} />
     )
   ) : (
-    <UserInfo info={user} setRefetch={setRefetch} />
+    <UserInfo info={user} setRefetch={setRefetch} bvnSlide={bvnSlide} />
   )}
 </div>
-       
-          
-        
-        
-        
-    
-         
-       
-       
-       
         
       </div>
       {openKyC && (
         <Kyc isOpen={openKyC} togglekyc={toggleKyc}  
-        id={window.location.pathname === '/customers' || window.location.pathname === '/kyc' ? user?.id : user?.user_id}/>
+        id={window.location.pathname === '/customers' || window.location.pathname === '/kyc' || bvnSlide ? user?.id : user?.user_id}/>
       )}
       {openHistory && (
         <LoanHistory isOpen={openHistory} toggleLoanHistory={toggleLoanHistory}  loanHistory={loanHistory}/>
@@ -310,7 +365,7 @@ const toggleLoanHistory = () => {
           value="temporary"
           checked={type === 'temporary'}
           onChange={() => setType('temporary')}
-         className="mr-2 accent-[#038FC1] w-[25px] h-[25px]"
+         className="mr-2 accent-[#1F96A9] w-[25px] h-[25px]"
         />
        
         <input
