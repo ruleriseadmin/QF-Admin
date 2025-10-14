@@ -13,6 +13,8 @@ import SlideActivity from '../activity/SlideActivity';
 import { subDays } from 'date-fns';
 import { Calendar } from "@/components/ui/calendar";
 import { DateRange } from "react-day-picker";
+import BvnMismatchModal from './BvnMismatchModal';
+
 
 
 
@@ -24,11 +26,19 @@ const Header = () => {
     const router = useRouter();
     const [disburse,setDisburse] = useState('');
     const [openActivity, setOpenActivty] = useState(false)
+    const [openMismatch, setOpenMismatch] = useState(false)
+    const [bvnExiting, setBvnExiting] = useState(false)
     const [isExiting, setIsExiting] = useState(false)
     const profile: any = JSON.parse(localStorage.getItem('profile') || '{}');
     const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [startDate, setStartDate] = useState<any>();
   const [endDate, setEndDate] = useState<any>();
+  const [bvnMisMatches, setBvnMisMatches] = useState<any>({});
+  const [isMismatch, setIsMismatch] = useState(false);
+  const [page, setPage] = useState(1);
+  const [itemsPerPage] = useState(10);
+  const [totalItems, setTotalItems] = useState(0);
+  const [lastPage, setLastPage] = useState(0);
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: subDays(new Date(), 29),
     to: new Date(),
@@ -68,6 +78,40 @@ const Header = () => {
     }
   }
 };
+
+// Handle page change
+  const handlePageChange = (page: number) => {
+    setPage(page);
+  };
+
+ useEffect(() => {
+    const fetchBvnMisMatch = async () => {
+       const controller = new AbortController();
+        const queryObj: Record<string, string> = { 
+          page: String(page), 
+          per_page: String(itemsPerPage),
+         
+        };
+        const queryString = new URLSearchParams(queryObj).toString();
+      try {
+        setLoading(true);
+        const response = await apiClient.get(`/customer/verification_mismatches?${queryString}`);
+        setBvnMisMatches(response?.data?.data|| '');
+        setTotalItems(response?.data?.data?.total_items || 0);
+        setLastPage(response?.data?.data?.last_page || 0);
+        if(response?.data?.data?.mismatches.length > 0){
+          setIsMismatch(true)
+        }
+  
+      } catch (error) {
+        console.error('Error fetching bvn mismatch status:', error);
+      }finally{
+        setLoading(false);
+      }
+    };
+  
+    fetchBvnMisMatch();
+  }, [page]);
 
 
 //always send the date range to the URL
@@ -122,6 +166,18 @@ const resetDateRange = () => {
           }, 300); // Match animation duration
         } else {
           setOpenActivty(true);
+        }
+      };
+
+     const toggleMismatch = () => {
+        if (openMismatch) {
+          setBvnExiting(true);
+          setTimeout(() => {
+            setOpenMismatch(false);
+            setBvnExiting(false);
+          }, 300); // Match animation duration
+        } else {
+          setOpenMismatch(true);
         }
       };
     
@@ -201,8 +257,8 @@ const resetDateRange = () => {
       
   return (
     <div className='mt-4 font-montserrat md:ml-8 lg:mx-6 mr-2 ml-3'>
-        <div className='flex justify-between items-center '>
-            <div className='flex justify-center items-center'>
+        <div className='flex justify-between  items-center '>
+            <div className='flex justify-center  items-center'>
 <div className="flex items-center bg-[#E1E3E4] rounded-full lg:w-[411px] md:w-[331px] w-[260px] h-[48px]  md:ml-2 md:px-2">
   {/* Left Section */}
   <div className="flex items-center flex-grow lg:ml-4 ml-2">
@@ -262,6 +318,20 @@ onClick={resetDateRange}
 {loading && <LoadingPage />}
 <div className="flex items-center justify-between gap-6 h-[48px]  ">
   {/* Left Section */}
+ 
+    <div 
+  onClick={() => setOpenMismatch(true)}
+  className=" items-center cursor-pointer text-nowrap lg:w-7/12 md:w-[115px] lg:flex md:hidden hidden">
+    <Image
+      src={`${isMismatch ? '/images/misMatch.png' : '/images/noMisMatch.png'}`}
+      alt="Logo"
+      width={20}
+      height={20}
+    />
+    <p className={`lg:ml-2 lg:text-[15px] font-semibold md:text-[14px] ${isMismatch ? 'text-[#C73802]' : 'text-[#828282]'}`}>{`You have (${bvnMisMatches?.mismatches?.length}) mismatch case${bvnMisMatches?.mismatches?.length > 1 ? 's' : ''}`}</p>
+
+  </div>
+  
   <div className=" items-center lg:w-[123px] md:w-[115px] lg:flex md:hidden hidden">
     <Image
       src="/images/lang.png"
@@ -378,6 +448,7 @@ onClick={handleLogout}
           message={error}
           toggleNotification={toggleNotification}
           isOpen={notificationOpen}
+          
         />
       )}
 
@@ -387,6 +458,21 @@ onClick={handleLogout}
     isOpen={!isExiting}
     toggleActivity={toggleActivity}
     isExiting={isExiting}
+    />
+  )
+}
+{  openMismatch && (
+    <BvnMismatchModal 
+    isOpen={!bvnExiting}
+    toggleMismatch={toggleMismatch}
+    isExiting={bvnExiting}
+    bvnArray={bvnMisMatches}
+    lastPage={lastPage}
+    page={page}
+    handlePageChange={handlePageChange}
+    itemsPerPage={itemsPerPage}
+    totalItems={totalItems || 0}
+    loading={loading}
     />
   )
 }
