@@ -102,7 +102,7 @@ const LoanHistory: React.FC<SideModalProps> = ({
         
     </div>
     {/* Scrollable Loan Cards Section */}
-    <div className={`relative mt-[190px] overflow-y-auto pb-10 z-0 h-[calc(100vh-170px)]`}>
+    <div className={`relative mt-[190px] overflow-y-auto pb-16 z-0 h-[calc(100vh-170px)]`}>
   
       {dataToDisplay?.map((loan: any, index: number) => (
         <UserLoan loanInfo={loan} loanHistory={true} key={index}/>

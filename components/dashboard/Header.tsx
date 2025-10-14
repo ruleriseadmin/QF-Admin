@@ -318,7 +318,7 @@ onClick={resetDateRange}
 {loading && <LoadingPage />}
 <div className="flex items-center justify-between gap-6 h-[48px]  ">
   {/* Left Section */}
- 
+  
     <div 
   onClick={() => setOpenMismatch(true)}
   className=" items-center cursor-pointer text-nowrap lg:w-7/12 md:w-[115px] lg:flex md:hidden hidden">
@@ -328,7 +328,7 @@ onClick={resetDateRange}
       width={20}
       height={20}
     />
-    <p className={`lg:ml-2 lg:text-[15px] font-semibold md:text-[14px] ${isMismatch ? 'text-[#C73802]' : 'text-[#828282]'}`}>{`You have (${bvnMisMatches?.mismatches?.length}) mismatch case${bvnMisMatches?.mismatches?.length > 1 ? 's' : ''}`}</p>
+    <p className={`lg:ml-2 lg:text-[15px] font-semibold md:text-[14px] ${isMismatch ? 'text-[#C73802]' : 'text-[#828282]'}`}>{`You have (${totalItems}) mismatch case${bvnMisMatches?.mismatches?.length > 1 ? 's' : ''}`}</p>
 
   </div>
   

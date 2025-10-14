@@ -1,7 +1,7 @@
 import React ,{useState,useEffect} from 'react';
 import Image from 'next/image';
 import { TiArrowSortedDown } from 'react-icons/ti';
-import { formatCurrency } from '@/utils/loan';
+import { formatCurrency, formatValue } from '@/utils/loan';
 import { useRouter,useSearchParams,usePathname } from 'next/navigation';
 import LoadingPage from '@/app/loading';
 import { FaEye } from 'react-icons/fa';
@@ -16,6 +16,7 @@ type BlackCardsProps = {
    cardView:string;
    setCardView: Dispatch<SetStateAction<string>>;
    loading:boolean
+   
 };
 
 const BlackCards: React.FC<BlackCardsProps> = ({ stats ,cardView,setCardView,loading}) => {
@@ -31,41 +32,40 @@ const BlackCards: React.FC<BlackCardsProps> = ({ stats ,cardView,setCardView,loa
     const [searchDate, setSearchDate] = useState({startDate: '', endDate: ''});
     
     const [dpdPI, setDpdPI] = useState(0);
-    const [dpdPIDate, setDpdPIDate] = useState({
-      start:'',
-      end:''
-    });
+    const [dpdPIDays, setDpdPIDays] = useState('30');
     const [openDpdPICalender, setOpenDpdPICalender] = useState(false);
+    const [showDpdPI, setShowDpdPI] = useState(false);
+
     const [dpdPrincipal, setDpdPrincipal] = useState(0);
-    const [dpdPrincipalDate, setDpdPrincipalDate] = useState({
-      start:'',
-      end:''
-    });
+    const [dpdPrincipalDays, setDpdPrincipalDays] = useState('30');
     const [openDpdPrincipalCalender, setOpenDpdPrincipalCalender] = useState(false);
+    const [showDpdPrincipal, setShowDpdPrincipal] = useState(false);
+
     const [dpdInterest, setDpdInterest] = useState(0);
-    const [dpdInterestDate, setDpdInterestDate] = useState({
-      start:'',
-      end:''
-    });
+    const [dpdInterestDays, setDpdInterestDays] = useState('30');
     const [openDpdInterestCalender, setOpenDpdInterestCalender] = useState(false);
+    const [showDpdInterest, setShowDpdInterest] = useState(false);
+
     const [amountRecovered, setAmountRecovered] = useState(0);
     const [amountRecoveredDate, setAmountRecoveredDate] = useState({
       start:'',
       end:''
     });
     const [openAmountRecoveredCalender, setOpenAmountRecoveredCalender] = useState(false);
+    const [showAmountRecovered, setShowAmountRecovered] = useState(false);
+
     const [amountCollected, setAmountCollected] = useState(0);
     const [amountCollectedDate, setAmountCollectedDate] = useState({
       start:'',
       end:''
     });
     const [openAmountCollectedCalender, setOpenAmountCollectedCalender] = useState(false);
+    const [showAmountCollected, setShowAmountCollected] = useState(false);
+
     const [npl, setNpl] = useState(0);
-    const [nplDate, setNplDate] = useState({
-      start:'',
-      end:''
-    });
+    const [nplDays, setNplDays] = useState('30');
     const [openNplCalender, setOpenNplCalender] = useState(false);
+    const [showNpl, setShowNpl] = useState(false);
 
    const formatDate = (dateString:string) => {
         if (!dateString) return '';
@@ -77,7 +77,16 @@ const BlackCards: React.FC<BlackCardsProps> = ({ stats ,cardView,setCardView,loa
         return `${year}-${month}-${day}`;
       }
       
-  
+    const selection = [
+      { name: '1 day', value: '1' },
+      {name: '2 days', value: '3' },
+      { name: '7 days', value: '7' },
+      {name:'14 days', value: '14' },
+      {name:'30 days', value: '30' },
+      {name:'60 days', value:'60'},
+      { name: '90 days', value: '90' },
+    ];
+
 
 useEffect(() => {
   if (!stats) return;
@@ -103,15 +112,30 @@ useEffect(() => {
     setAmountRecovered(data?.total_amount_recovered || 0);
     setAmountCollected(data?.total_interest_on_loans_collected || 0);
     setNpl(data?.npl || 0);
+   
+
   }
 }, [stats, lastUpdatedField, cardView]);
 
 
   useEffect(() => {
+    if(lastUpdatedField === 'dpdPI' && dpdPIDays ){
+      router.replace(`${pathname}?days=${dpdPIDays}`, { scroll: false });
+    }
+    if(lastUpdatedField === 'dpdPrincipal' && dpdPrincipal ){
+       router.replace(`${pathname}?days=${dpdPrincipalDays}`, { scroll: false });
+    }
+    if(lastUpdatedField === 'dpdInterest' && dpdInterest ){
+       router.replace(`${pathname}?days=${dpdInterestDays}`, { scroll: false });
+    }
+    if(lastUpdatedField === 'npl' && npl ){
+       router.replace(`${pathname}?days=${nplDays}`, { scroll: false });
+    }
     if (queryStart && queryEnd) {
       router.replace(`${pathname}?start=${queryStart}&end=${queryEnd}`, { scroll: false });
     }
-  }, [queryStart, queryEnd]);
+    
+  }, [queryStart, queryEnd, dpdPIDays,dpdPrincipalDays,dpdInterestDays,nplDays]);
   
   
   
@@ -120,62 +144,95 @@ useEffect(() => {
     <div className=" my-4  h-auto font-montserrat ml-4 mr-2   md:ml-11 lg:ml-8">
       <div className="grid lg:grid-cols-3 md:grid-cols-3 grid-cols-1 gap-3">
 
-          <div>
-            <div  className={`w-full lg:h-[142px] h-[142px] md:min-h-[142px] md:h-auto bg-[#252827] relative rounded-[12px] shadow-custom3  `}>
-            <Image
-                src='/images/coin.png'
-                alt='Hero Image'
-                width={136}
-                height={136}
-                className="object-cover absolute top-10 right-0 rounded-[12px]"
-                />
-                <p className='h-2'></p>
-                <div className='flex w-11/12 mx-auto h-[48px] px-4 items-center justify-between border border-solid border-[#E1E3E4] bg-[#E1E3E4]  rounded-[12px]'>
-                <p className="ml-2 text-[16px] lg:text-[16px] md:text-[10px] text-[#282828] font-medium"><span className='font-semibold'> {(dpdPIDate.start && dpdPIDate.end ) ?  `${dpdPIDate.start} - ${dpdPIDate.start}`  : 'dd-mm-yy - dd-mm-yy'}</span></p>
-                    
-                <TiArrowSortedDown 
-                className="text-[#828282] text-[20px]  cursor-pointer "
-                onClick={() => setOpenDpdPICalender(true)}
-                />
-                 {openDpdPICalender && (
-                                                        <>
-                                                           {/* Background Overlay */}
-                                                           <div
-                                                             className="fixed inset-0   z-40"
-                                                             onClick={() => setOpenDpdPICalender(false)}
-                                                           ></div>
-                                                       
-                                                           {/* Calendar Dropdown */}
-                                                           <div className="absolute top-5    bg-[#E0E0E0] shadow-md rounded-md  z-50">
-                                                           <C
-                                                       mode="range"
-                                                       selected={{ from: dpdPIDate.start, to: dpdPIDate.end }}
-                                                       onSelect={(range:any) => {
-                                                         setSearchDate({startDate: '', endDate: ''});
-                                                          setDpdPIDate({start: formatDate(range.from), end: formatDate(range.to)});
-                                                         setCardView('blackcards')
-                                                          setLastUpdatedField('dpdPI');
-                                                         setQueryStart(formatDate(range.from));
-                                                         setQueryEnd(formatDate(range.to));
-                                                       }}
-                                                       defaultMonth={dateRange?.from || new Date()}
-                                                       numberOfMonths={2}
-                                                       className=" w-full h-full" // You can add a class name here if needed
-                                                       classNames={{}} // Yo
-                                                     />
-                                                                         
-                                                           </div>
-                                                         </>
-                                                     )}
+<div>
+  <div className="w-full lg:h-[142px] h-[142px] md:min-h-[142px] md:h-auto bg-[#252827] relative rounded-[12px] shadow-custom3">
+    <Image
+      src="/images/coin.png"
+      alt="Hero Image"
+      width={136}
+      height={136}
+      className="object-cover absolute top-10 right-0 rounded-[12px]"
+    />
 
+    <p className="h-2"></p>
+
+    <div className="flex w-11/12 mx-auto h-[48px] px-4 items-center justify-between border border-solid border-[#E1E3E4] bg-[#E1E3E4] rounded-[12px]">
+      <p className="ml-2 text-[16px] lg:text-[16px] md:text-[10px] text-[#282828] font-medium">
+        <span className="font-semibold">
+          {dpdPIDays || '30'} day(s)
+        </span>
+      </p>
+
+      <TiArrowSortedDown
+        className="text-[#828282] text-[20px] cursor-pointer"
+        onClick={() => setOpenDpdPICalender(true)}
+      />
+
+      {openDpdPICalender && (
+        <>
+          {/* Background Overlay */}
+          <div
+            className="fixed inset-0 z-40"
+            onClick={() => setOpenDpdPICalender(false)}
+          ></div>
+
+          {/* Calendar Dropdown */}
+          <div className="absolute top-16 w-11/12 left-4 bg-[#E0E0E0] shadow-md rounded-md z-50 p-3">
+            {selection.map((select, index) => (
+              <button
+                key={index}
+                onClick={() => {
+                  setDpdPIDays(select.value);
+                  setCardView('blackcards')
+                  setLastUpdatedField('dpdPI')
+                  setQueryStart('');
+                  setQueryEnd('');
+                  setSearchDate({ startDate: '', endDate: '' });
+                  setOpenDpdPICalender(false);
+                }}
+                className={`w-full text-start ml-2 text-[16px] font-medium pb-2 text-[#464646] ${
+                  index === 0 ? 'mt-2' : 'mt-1'
+                }`}
+              >
+                <div className="flex justify-start items-center gap-4">
+                  <p>{select.name}</p>
+                  {select.value === dpdPIDays && (
+                    <Image
+                      src="/images/good.png"
+                      alt="good"
+                      height={17}
+                      width={17}
+                    />
+                  )}
                 </div>
-                <div className='flex items-center lg:m-6 m-6 md:mx-2 md:my-6 lg:gap-3 gap-3 md:gap-2'>
+              </button>
+            ))}
+
+            {/* Custom input for manual day entry */}
+            <div className="flex w-full mt-3 h-[38px] px-2 items-center justify-between bg-white rounded-[12px]">
+              <input
+                type="number"
+                value={dpdPIDays}
+                onChange={(e) => {
+                  setDpdPIDays(e.target.value)
+                  setCardView('blackcards')
+                  setLastUpdatedField('dpdPI')
+                }}
+                className="w-full border font-medium border-gray-300 rounded-[8px] px-2 py-1 text-[16px] text-[#282828]"
+              />
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+     <div className='flex items-center lg:m-6 m-6 md:mx-2 md:my-6 lg:gap-3 gap-3 md:gap-2'>
                <p className='text-[#FFFFFF] font-medium md:text-[12px] lg:text-[20px] text-[20px]'>Dpd (p+i)</p>
-                    <p className='text-[#FFFFFF] font-bold  md:text-[12px] lg:text-[20px] text-[20px]'>{formatCurrency(dpdPI || 0)}</p>
+                    <p className='text-[#FFFFFF] font-bold  md:text-[12px] lg:text-[20px] text-[20px]'>{showDpdPI ? formatCurrency(dpdPI || 0) : "*****"}</p>
+                    <FaEye className='text-[#5A5A5A] text-[15px] lg:text-[15px] md:text-[13px] cursor-pointer' onClick={() => setShowDpdPI(prev => !prev)}/>
                     
                 </div>
-            </div>
-            
+  </div>
+               
 
     {loading && <LoadingPage />}
           </div>
@@ -191,7 +248,7 @@ useEffect(() => {
                 />
                 <p className='h-2'></p>
                 <div className='flex w-11/12 mx-auto h-[48px] px-4 items-center justify-between border border-solid border-[#E1E3E4] bg-[#E1E3E4]  rounded-[12px]'>
-                <p className="ml-2 text-[16px] lg:text-[16px] md:text-[10px] text-[#282828] font-medium"><span className='font-semibold'> {(dpdPrincipalDate.start && dpdPrincipalDate.end ) ?  `${dpdPrincipalDate.start} - ${dpdPrincipalDate.start}`  : 'dd-mm-yy - dd-mm-yy'}</span></p>
+                <p className="ml-2 text-[16px] lg:text-[16px] md:text-[10px] text-[#282828] font-medium"><span className='font-semibold'> {dpdPrincipalDays || '30'} day(s)</span></p>
                     
                       
                 <TiArrowSortedDown
@@ -204,34 +261,61 @@ useEffect(() => {
                                                            className="fixed inset-0   z-40"
                                                            onClick={() => setOpenDpdPrincipalCalender(false)}
                                                          ></div>
+                 {/* Calendar Dropdown */}
+          <div className="absolute top-16 w-11/12 left-4 bg-[#E0E0E0] shadow-md rounded-md z-50 p-3">
+            {selection.map((select, index) => (
+              <button
+                key={index}
+                onClick={() => {
+                  setDpdPrincipalDays(select.value);
+                  setLastUpdatedField('dpdPrincipal')
+                  setCardView('blackcards')
+                  setQueryStart('');
+                  setQueryEnd('');
+                  setSearchDate({ startDate: '', endDate: '' });
+                  setOpenDpdPrincipalCalender(false)
+                }}
+                className={`w-full text-start ml-2 text-[16px] font-medium pb-2 text-[#464646] ${
+                  index === 0 ? 'mt-2' : 'mt-1'
+                }`}
+              >
+                <div className="flex justify-start items-center gap-4">
+                  <p>{select.name}</p>
+                  {select.value === dpdPrincipalDays && (
+                    <Image
+                      src="/images/good.png"
+                      alt="good"
+                      height={17}
+                      width={17}
+                    />
+                  )}
+                </div>
+              </button>
+            ))}
+
+            {/* Custom input for manual day entry */}
+            <div className="flex w-full mt-3 h-[38px] px-2 items-center justify-between bg-white rounded-[12px]">
+              <input
+                type="number"
+                value={dpdPrincipalDays}
+                onChange={(e) => {
+                  setDpdPrincipalDays(e.target.value)
+                  setCardView('blackcards')
+                  setLastUpdatedField('dpdPrincipal')
+                }}
+                className="w-full border font-medium border-gray-300 rounded-[8px] px-2 py-1 text-[16px] text-[#282828]"
+              />
+            </div>
+          </div>
                                                      
-                                                         {/* Calendar Dropdown */}
-                                                         <div className="absolute top-5    bg-[#E0E0E0] shadow-md rounded-md  z-50">
-                                                         <C
-                                                     mode="range"
-                                                     selected={{ from: dpdPrincipalDate.start, to: dpdPrincipalDate.end }}
-                                                     onSelect={(range:any) => {
-                                                       setSearchDate({startDate: '', endDate: ''});
-                                                        setDpdPrincipalDate({start: formatDate(range.from), end: formatDate(range.to)});
-                                                        setCardView('blackcards')
-                                                        setLastUpdatedField('dpdPrincipal');
-                                                       setQueryStart(formatDate(range.from));
-                                                       setQueryEnd(formatDate(range.to));
-                                                     }}
-                                                     defaultMonth={dateRange?.from || new Date()}
-                                                     numberOfMonths={2}
-                                                     className=" w-full h-full" // You can add a class name here if needed
-                                                     classNames={{}} // Yo
-                                                   />
-                                                                       
-                                                         </div>
                                                        </>
                                                    )}
 
                 </div>
                 <div className='flex items-center lg:m-6 m-6 md:mx-2 md:my-6 lg:gap-3 gap-3 md:gap-2'>
                <p className='text-[#FFFFFF] font-medium md:text-[12px] lg:text-[20px] text-[20px]'>Dpd (p)</p>
-                    <p className='text-[#FFFFFF] font-bold  md:text-[12px] lg:text-[20px] text-[20px]'>{formatCurrency(dpdPrincipal || 0)}</p>
+                    <p className='text-[#FFFFFF] font-bold  md:text-[12px] lg:text-[20px] text-[20px]'>{ showDpdPrincipal ? formatCurrency(dpdPrincipal || 0) : '*****'}</p>
+                    <FaEye className='text-[#5A5A5A] text-[15px] lg:text-[15px] md:text-[13px] cursor-pointer' onClick={() => setShowDpdPrincipal(prev => !prev)}/>
                     
                 </div>
             </div>
@@ -251,7 +335,7 @@ useEffect(() => {
                 />
                 <p className='h-2'></p>
                 <div className='flex w-11/12 mx-auto h-[48px] px-4 items-center justify-between border border-solid border-[#E1E3E4] bg-[#E1E3E4]  rounded-[12px]'>
-                <p className="ml-2 text-[16px] lg:text-[16px] md:text-[10px] text-[#282828] font-medium"><span className='font-semibold'> {(dpdInterestDate.start && dpdInterestDate.end ) ?  `${dpdInterestDate.start} - ${dpdInterestDate.end}`  : 'dd-mm-yy - dd-mm-yy'}</span></p>
+                <p className="ml-2 text-[16px] lg:text-[16px] md:text-[10px] text-[#282828] font-medium"><span className='font-semibold'> {dpdInterestDays || '30'} day(s)</span></p>
                     
               <TiArrowSortedDown 
               onClick={() => setOpenDpdInterestCalender(true)}
@@ -266,32 +350,59 @@ useEffect(() => {
                                                          ></div>
                                                      
                                                          {/* Calendar Dropdown */}
-                                                         <div className="absolute top-10 right-1    bg-[#E0E0E0] shadow-md rounded-md  z-50">
-                                                         <C
-                                                     mode="range"
-                                                     selected={{ from: dpdInterestDate.start, to: dpdInterestDate.end }}
-                                                     onSelect={(range:any) => {
-                                                       setSearchDate({startDate: '', endDate: ''});
-                                                        setDpdInterestDate({start: formatDate(range.from), end: formatDate(range.to)});
-                                                        setCardView('blackcards')
-                                                        setLastUpdatedField('dpdInterest');
-                                                       setQueryStart(formatDate(range.from));
-                                                       setQueryEnd(formatDate(range.to));
-                                                     }}
-                                                     defaultMonth={dateRange?.from || new Date()}
-                                                     numberOfMonths={2}
-                                                     className=" w-full h-full" // You can add a class name here if needed
-                                                     classNames={{}} // Yo
-                                                   />
-                                                                       
-                                                         </div>
+          <div className="absolute top-16 w-11/12 left-4 bg-[#E0E0E0] shadow-md rounded-md z-50 p-3">
+            {selection.map((select, index) => (
+              <button
+                key={index}
+                onClick={() => {
+                  setDpdInterestDays(select.value);
+                  setLastUpdatedField('dpdInterest')
+                  setCardView('blackcards')
+                  setQueryStart('');
+                  setQueryEnd('');
+                  setSearchDate({ startDate: '', endDate: '' });
+                  setOpenDpdInterestCalender(false)
+                }}
+                className={`w-full text-start ml-2 text-[16px] font-medium pb-2 text-[#464646] ${
+                  index === 0 ? 'mt-2' : 'mt-1'
+                }`}
+              >
+                <div className="flex justify-start items-center gap-4">
+                  <p>{select.name}</p>
+                  {select.value === dpdInterestDays && (
+                    <Image
+                      src="/images/good.png"
+                      alt="good"
+                      height={17}
+                      width={17}
+                    />
+                  )}
+                </div>
+              </button>
+            ))}
+
+            {/* Custom input for manual day entry */}
+            <div className="flex w-full mt-3 h-[38px] px-2 items-center justify-between bg-white rounded-[12px]">
+              <input
+                type="number"
+                value={dpdInterestDays}
+                onChange={(e) => {
+                  setDpdInterestDays(e.target.value)
+                  setCardView('blackcards')
+                  setLastUpdatedField('dpdInterest')
+                }}
+                className="w-full border font-medium border-gray-300 rounded-[8px] px-2 py-1 text-[16px] text-[#282828]"
+              />
+            </div>
+          </div>
+                                                     
                                                        </>
                                                    )}
-
                 </div>
                 <div className='flex items-center lg:m-6 m-6 md:mx-2 md:my-6 lg:gap-3 gap-3 md:gap-2'>
                <p className='text-[#FFFFFF] font-medium md:text-[12px] lg:text-[20px] text-[20px]'>Dpd (i)</p>
-                    <p className='text-[#FFFFFF] font-bold  md:text-[12px] lg:text-[20px] text-[20px]'>{formatCurrency(dpdInterest || 0)}</p>
+                    <p className='text-[#FFFFFF] font-bold  md:text-[12px] lg:text-[20px] text-[20px]'>{ showDpdInterest ? formatCurrency(dpdInterest || 0) : '*****'}</p>
+                    <FaEye className='text-[#5A5A5A] text-[15px] lg:text-[15px] md:text-[13px] cursor-pointer' onClick={() => setShowDpdInterest(prev => !prev)}/>
                     
                 </div>
             </div>
@@ -357,8 +468,9 @@ useEffect(() => {
                           alt='Hero Image'
                           className="object-cover w-[46px] h-[46px] lg:w-[46px] lg:h-[46px] md:w-6 md:h-6"
           />
-                              <p className='text-[#282828] font-bold text-[22px] lg:text-[22px] md:text-[13px]'>{formatCurrency(Math.abs(amountRecovered) || 0)}</p>
-                              <FaEye className='text-[#5A5A5A] text-[15px] lg:text-[15px] md:text-[13px]'/>
+                              <p className='text-[#282828] font-bold text-[22px] lg:text-[22px] md:text-[13px]'>{showAmountRecovered ? formatCurrency(Math.abs(amountRecovered) || 0) : '*****'}</p>
+                              <FaEye 
+                              className='text-[#5A5A5A] text-[15px] lg:text-[15px] md:text-[13px] cursor-pointer' onClick={() => setShowAmountRecovered(prev => !prev)}/>
                           </div>
                       </div>
           {/* Fifth Card */}
@@ -418,8 +530,10 @@ useEffect(() => {
                           alt='Hero Image'
                           className="object-cover w-[46px] h-[46px] lg:w-[46px] lg:h-[46px] md:w-6 md:h-6"
           />
-                              <p className='text-[#282828] font-bold text-[22px] lg:text-[22px] md:text-[13px]'>{formatCurrency(amountCollected || 0)}</p>
-                              <FaEye className='text-[#5A5A5A] text-[15px] lg:text-[15px] md:text-[13px]'/>
+                              <p className='text-[#282828] font-bold text-[22px] lg:text-[22px] md:text-[13px]'>{showAmountCollected ? formatCurrency(amountCollected || 0) : '*****'}</p>
+                              <FaEye className='text-[#5A5A5A] text-[15px] lg:text-[15px] md:text-[13px] cursor-pointer' 
+                              onClick={() => setShowAmountCollected(prev => !prev)}
+                              />
                           </div>
                       </div>
           
@@ -435,7 +549,7 @@ useEffect(() => {
                 />
                 <p className='h-2'></p>
                 <div className='flex w-11/12 mx-auto h-[48px] px-4 items-center justify-between border border-solid border-[#E1E3E4] bg-[#E1E3E4]  rounded-[12px]'>
-                <p className="ml-2 text-[16px] lg:text-[16px] md:text-[10px] text-[#282828] font-medium"><span className='font-semibold'> {(nplDate.start && nplDate.end ) ?  `${nplDate.start} - ${nplDate.end}`  :  'dd-mm-yy - dd-mm-yy'}</span></p>
+                <p className="ml-2 text-[16px] lg:text-[16px] md:text-[10px] text-[#282828] font-medium"><span className='font-semibold'> {nplDays || '30'} day(s)</span></p>
                     
                      
                         <TiArrowSortedDown 
@@ -449,32 +563,59 @@ useEffect(() => {
                                                                onClick={() => setOpenNplCalender(false)}
                                                              ></div>
                                                          
-                                                             {/* Calendar Dropdown */}
-                                                             <div className="absolute top-10 right-1    bg-[#E0E0E0] shadow-md rounded-md  z-50">
-                                                             <C
-                                                         mode="range"
-                                                         selected={{ from: nplDate.start, to: nplDate.end }}
-                                                         onSelect={(range:any) => {
-                                                           setSearchDate({startDate: '', endDate: ''});
-                                                            setNplDate({start: formatDate(range.from), end: formatDate(range.to)});
-                                                            setCardView('blackcards')
-                                                            setLastUpdatedField('npl');
-                                                           setQueryStart(formatDate(range.from));
-                                                           setQueryEnd(formatDate(range.to));
-                                                         }}
-                                                         defaultMonth={dateRange?.from || new Date()}
-                                                         numberOfMonths={2}
-                                                         className=" w-full h-full" // You can add a class name here if needed
-                                                         classNames={{}} // Yo
-                                                       />
-                                                                           
-                                                             </div>
+                                                              {/* Calendar Dropdown */}
+          <div className="absolute top-16 w-11/12 left-4 bg-[#E0E0E0] shadow-md rounded-md z-50 p-3">
+            {selection.map((select, index) => (
+              <button
+                key={index}
+                onClick={() => {
+                  setNplDays(select.value);
+                  setLastUpdatedField('npl')
+                  setCardView('blackcards')
+                  setQueryStart('');
+                  setQueryEnd('');
+                  setSearchDate({ startDate: '', endDate: '' });
+                  setOpenNplCalender(false)
+                }}
+                className={`w-full text-start ml-2 text-[16px] font-medium pb-2 text-[#464646] ${
+                  index === 0 ? 'mt-2' : 'mt-1'
+                }`}
+              >
+                <div className="flex justify-start items-center gap-4">
+                  <p>{select.name}</p>
+                  {select.value === nplDays && (
+                    <Image
+                      src="/images/good.png"
+                      alt="good"
+                      height={17}
+                      width={17}
+                    />
+                  )}
+                </div>
+              </button>
+            ))}
+
+            {/* Custom input for manual day entry */}
+            <div className="flex w-full mt-3 h-[38px] px-2 items-center justify-between bg-white rounded-[12px]">
+              <input
+                type="number"
+                value={nplDays}
+                onChange={(e) => {
+                  setNplDays(e.target.value)
+                  setCardView('blackcards')
+                  setLastUpdatedField('npl')
+                }}
+                className="w-full border font-medium border-gray-300 rounded-[8px] px-2 py-1 text-[16px] text-[#282828]"
+              />
+            </div>
+          </div>
                                                            </>
                                                        )}
                   </div>
                   <div className='flex items-center lg:m-6 m-6 md:mx-2 md:my-6 lg:gap-3 gap-3 md:gap-2'>
                <p className='text-[#FFFFFF] font-medium md:text-[12px] lg:text-[20px] text-[20px]'>Npl</p>
-                    <p className='text-[#FFFFFF] font-bold  md:text-[12px] lg:text-[20px] text-[20px]'>{formatCurrency(Math.abs(npl))}</p>
+                    <p className='text-[#FFFFFF] font-bold  md:text-[12px] lg:text-[20px] text-[20px]'>{showNpl ? formatValue(Math.abs(npl)) : '*****'} %</p>
+                    <FaEye className='text-[#5A5A5A] text-[15px] lg:text-[15px] md:text-[13px] cursor-pointer' onClick={() => setShowNpl(prev => !prev)}/>
                     
                 </div>
    
@@ -488,6 +629,7 @@ useEffect(() => {
           </div>
           
        
+        
       </div>
     
   );
