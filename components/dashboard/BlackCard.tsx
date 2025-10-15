@@ -34,17 +34,17 @@ const BlackCards: React.FC<BlackCardsProps> = ({ stats ,cardView,setCardView,loa
     const [dpdPI, setDpdPI] = useState(0);
     const [dpdPIDays, setDpdPIDays] = useState('30');
     const [openDpdPICalender, setOpenDpdPICalender] = useState(false);
-    const [showDpdPI, setShowDpdPI] = useState(false);
+    const [showDpdPI, setShowDpdPI] = useState(true);
 
     const [dpdPrincipal, setDpdPrincipal] = useState(0);
     const [dpdPrincipalDays, setDpdPrincipalDays] = useState('30');
     const [openDpdPrincipalCalender, setOpenDpdPrincipalCalender] = useState(false);
-    const [showDpdPrincipal, setShowDpdPrincipal] = useState(false);
+    const [showDpdPrincipal, setShowDpdPrincipal] = useState(true);
 
     const [dpdInterest, setDpdInterest] = useState(0);
     const [dpdInterestDays, setDpdInterestDays] = useState('30');
     const [openDpdInterestCalender, setOpenDpdInterestCalender] = useState(false);
-    const [showDpdInterest, setShowDpdInterest] = useState(false);
+    const [showDpdInterest, setShowDpdInterest] = useState(true);
 
     const [amountRecovered, setAmountRecovered] = useState(0);
     const [amountRecoveredDate, setAmountRecoveredDate] = useState({
@@ -52,7 +52,7 @@ const BlackCards: React.FC<BlackCardsProps> = ({ stats ,cardView,setCardView,loa
       end:''
     });
     const [openAmountRecoveredCalender, setOpenAmountRecoveredCalender] = useState(false);
-    const [showAmountRecovered, setShowAmountRecovered] = useState(false);
+    const [showAmountRecovered, setShowAmountRecovered] = useState(true);
 
     const [amountCollected, setAmountCollected] = useState(0);
     const [amountCollectedDate, setAmountCollectedDate] = useState({
@@ -60,12 +60,12 @@ const BlackCards: React.FC<BlackCardsProps> = ({ stats ,cardView,setCardView,loa
       end:''
     });
     const [openAmountCollectedCalender, setOpenAmountCollectedCalender] = useState(false);
-    const [showAmountCollected, setShowAmountCollected] = useState(false);
+    const [showAmountCollected, setShowAmountCollected] = useState(true);
 
     const [npl, setNpl] = useState(0);
     const [nplDays, setNplDays] = useState('30');
     const [openNplCalender, setOpenNplCalender] = useState(false);
-    const [showNpl, setShowNpl] = useState(false);
+    const [showNpl, setShowNpl] = useState(true);
 
    const formatDate = (dateString:string) => {
         if (!dateString) return '';

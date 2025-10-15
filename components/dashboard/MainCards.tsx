@@ -28,38 +28,38 @@ const MainCards: React.FC<MainCardsProps> = ({ stats,cardView,setCardView,loadin
     start:'',
     end:''
   });
-  const [showDisbursedPI, setShowDisbursedPI] = useState(false)
+  const [showDisbursedPI, setShowDisbursedPI] = useState(true);
   const [fullyCollectedPI, setFullyCollectedPI] = useState(0);
   const [fullyCollectedDate, setFullyCollectedDate] = useState({
     start:'',
     end:''
   });
-  const [showFullyCollectedPI, setShowFullyCollectedPI] = useState(false)
+  const [showFullyCollectedPI, setShowFullyCollectedPI] = useState(true);
   const [totalLoanOverduePI, setTotalLoanOverduePI] = useState(0);
   const [totalLoanOverdueDate, setTotalLoanOverdueDate] = useState({
     start:'',
     end:''
 
   });
-  const [showTotalLoanOverduePI, setShowTotalLoanOverduePI] = useState(false)
+  const [showTotalLoanOverduePI, setShowTotalLoanOverduePI] = useState(true);
   const [totalLoanDisbursedPrincipal, setTotalLoanDisbursedPrincipal] = useState(0);
   const [totalLoanDisbursedPrincipalDate, setTotalLoanDisbursedPrincipalDate] = useState({
     start:'',
     end:''
   });
-  const [showTotalLoanDisbursedPrincipal, setShowTotalLoanDisbursedPrincipal] = useState(false);
+  const [showTotalLoanDisbursedPrincipal, setShowTotalLoanDisbursedPrincipal] = useState(true)
   const [totalLoanOverduePrincipal, setTotalLoanOverduePrincipal] = useState(0);
   const [totalLoanOverduePrincipalDate, setTotalLoanOverduePrincipalDate] = useState({
     start:'',
     end:''
   });
-  const [showTotalLoanOverduePrincipal, setShowTotalLoanOverduePrincipal] = useState(false);
+  const [showTotalLoanOverduePrincipal, setShowTotalLoanOverduePrincipal] = useState(true)
   const [totalInterestDisbursed, setTotalInterestDisbursed] = useState(0);
    const [totalInterestDisbursedDate, setTotalInterestDisbursedDate] = useState({
      start:'',
      end:''
    });
-   const [showTotalInterestDisbursed, setShowTotalInterestDisbursed] = useState(false);
+   const [showTotalInterestDisbursed, setShowTotalInterestDisbursed] = useState(true)
    const [openTotalInterestDisbursedCalender, setOpenTotalInterestDisbursedCalender] = useState(false);
   const [openCalenderDisbursed, setopenCalenderDisbursed] = useState(false);
   const [openCalenderCollected, setOpenCalenderCollected] = useState(false)

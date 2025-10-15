@@ -42,9 +42,9 @@ const WelcomeCard: React.FC<WelcomeCardProps> = ({ stats }) => {
 
   const [disbursedSearchDate, setDisbursedSearchDate] = useState({ startDate: '', endDate: '' });
   const [collectedSearchDate, setCollectedSearchDate] = useState({ startDate: '', endDate: '' });
-  const [showUnique,setShowUnique] = useState(false)
-  const [showDisbursed,setShowDisbursed] = useState(false)
-  const [showCollected,setShowCollected] = useState(false)
+  const [showUnique,setShowUnique] = useState(true)
+  const [showDisbursed,setShowDisbursed] = useState(true)
+  const [showCollected,setShowCollected] = useState(true)
 
   //toggle unique
   const toggleUnique = () => {

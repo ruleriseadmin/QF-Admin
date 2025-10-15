@@ -32,42 +32,42 @@ const LastCards: React.FC<LastCardsProps> = ({ stats,cardView,setCardView,loadin
     start:'',
     end:''
   });
-  const [showTotalPenalty, setShowTotalPenalty] = useState(false);
+  const [showTotalPenalty, setShowTotalPenalty] = useState(true);
   const [openTotalPenaltyCalender, setOpentotalPenaltyCalender] = useState(false);
   const [penaltyDue, setPenaltyDue] = useState(0);
   const [penaltyDueDate, setPenaltyDueDate] = useState({
     start:'',
     end:''
   });
-  const [showPenaltyDue, setShowPenaltyDue] = useState(false);
+  const [showPenaltyDue, setShowPenaltyDue] = useState(true);
   const [openPenaltyDueCalender, setOpenPenaltyDueCalender] = useState(false);
   const [penaltyCollected, setPenaltyCollected] = useState(0);
   const [penaltyCollectedDate, setPenaltyCollectedDate] = useState({
     start:'',
     end:''
   });
-  const [showPenaltyCollected, setShowPenaltyCollected] = useState(false);
+  const [showPenaltyCollected, setShowPenaltyCollected] = useState(true);
   const [openPenaltyCollectedCalender, setOpenPenaltyCollectedCalender] = useState(false);
   const [penaltyCount, setPenaltyCount] = useState(0);
   const [penaltyCountDate, setPenaltyCountDate] = useState({
     start:'',
     end:''
   });
-  const [showPenaltyCount, setShowPenaltyCount] = useState(false);
+  const [showPenaltyCount, setShowPenaltyCount] = useState(true);
   const [openPenaltyCountCalender, setOpenPenaltyCountCalender] = useState(false);
   const [penaltyDueCount, setPenaltyDueCount] = useState(0);
   const [penaltyDueCountDate, setPenaltyDueCountDate] = useState({
     start:'',
     end:''
   });
-  const [showPenaltyDueCount,setShowPenaltyDueCount] = useState(false);
+  const [showPenaltyDueCount,setShowPenaltyDueCount] = useState(true);
   const [openPenaltyDueCountCalender, setOpenPenaltyDueCountCalender] = useState(false);
   const [totalOpenLoanInterest, setTotalOpenLoanInterest] = useState(0);
   const [totalOpenLoanInterestDate, setTotalOpenLoanInterestDate] = useState({
     start:'',
     end:''
   });
-  const [showTotalOpenLoanInterest, setShowTotalOpenLoanInterest] = useState(false);
+  const [showTotalOpenLoanInterest, setShowTotalOpenLoanInterest] = useState(true);
   const [openTotalOpenLoanInterestCalender, setOpenTotalOpenLoanInterestCalender] = useState(false);
   
  

@@ -31,21 +31,21 @@ const MainCards2: React.FC<MainCards2Props> = ({ stats,cardView,setCardView ,loa
     start:'',
     end:''
   });
-  const [showTotalInterestOverdue, setShowTotalInterestOverdue] = useState(false);
+  const [showTotalInterestOverdue, setShowTotalInterestOverdue] = useState(true);
   const [openTotalInterestOverdueCalender, setOpenTotalInterestOverdueCalender] = useState(false);
   const [totalOpenLoanPI, setTotalOpenLoanPI] = useState(0);
   const [totalOpenLoanPIDate, setTotalOpenLoanPIDate] = useState({
     start:'',
     end:''
   });
-  const [showTotalOpenLoanPI, setShowTotalOpenLoanPI] = useState(false);
+  const [showTotalOpenLoanPI, setShowTotalOpenLoanPI] = useState(true);
   const [openTotalOpenLoanPIDateCalender, setOpenTotalOpenLoanPIDateCalender] = useState(false);
   const [totalOpenLoanPrincipal, setTotalOpenLoanPrincipal] = useState(0);
   const [totalOpenLoanPrincipalDate, setTotalOpenLoanPrincipalDate] = useState({
     start:'',
     end:''
   });
-  const [showTotalOpenLoanPrincipal, setShowTotalOpenLoanPrincipal] = useState(false);
+  const [showTotalOpenLoanPrincipal, setShowTotalOpenLoanPrincipal] = useState(true);
   const [openTotalOpenLoanPrincipalCalender, setOpenTotalOpenLoanPrincipalCalender] = useState(false);
   
  const formatDate = (dateString:string) => {
