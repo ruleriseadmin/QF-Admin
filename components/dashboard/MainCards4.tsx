@@ -33,21 +33,21 @@ const MainCards4: React.FC<MainCards4Props> = ({ stats,cardView,setCardView,load
     start: '',
     end: ''
   });
-  const [showOverdueLoanCount, setShowOverdueLoanCount] = useState(false);
+  const [showOverdueLoanCount, setShowOverdueLoanCount] = useState(true)
   const [openOverDueLoanCountCalendar, setOpenOverDueLoanCountCalendar] = useState(false);
   const [disbursementToday, setDisbursementToday] = useState(0);
   const [disbursementTodayDate, setDisbursementTodayDate] = useState({
     start: '',
     end: ''
   });
-  const [showDisbursementToday, setShowDisbursementToday] = useState(false);
+  const [showDisbursementToday, setShowDisbursementToday] = useState(true)
   const [openDisbursementTodayCalendar, setOpenDisbursementTodayCalendar] = useState(false);
   const [loanProvidedCount, setLoanProvidedCount] = useState(0);
   const [loanProvidedCountDate, setLoanProvidedCountDate] = useState({
     start: '',
     end: ''
   });
-  const [showLoanProvidedCount, setShowLoanProvidedCount] = useState(false);
+  const [showLoanProvidedCount, setShowLoanProvidedCount] = useState(true)
   const [openLoanProvidedCountCalendar, setOpenLoanProvidedCountCalendar] = useState(false);
   
 

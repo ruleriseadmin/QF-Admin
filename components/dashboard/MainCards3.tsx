@@ -35,12 +35,12 @@ const MainCards3: React.FC<MainCards3Props> = ({ stats, cardView, setCardView,lo
   const [loanOpenCount, setLoanOpenCount] = useState(0);
   const [loanClosedCount, setLoanClosedCount] = useState(0);
 
-  const [showLoanDueToday, setShowLoanDueToday] = useState(false);
-  const [showLoanDueTodayPrincipal, setShowLoanDueTodayPrincipal] = useState(false);
-  const [showLoanDueTodayInterest, setShowLoanDueTodayInterest] = useState(false);
-  const [showLoanDisbursedCount, setShowLoanDisbursedCount] = useState(false);
-  const [showLoanOpenCount, setShowLoanOpenCount] = useState(false);
-  const [showLoanClosedCount, setShowLoanClosedCount] = useState(false);
+  const [showLoanDueToday, setShowLoanDueToday] = useState(true)
+  const [showLoanDueTodayPrincipal, setShowLoanDueTodayPrincipal] = useState(true)
+  const [showLoanDueTodayInterest, setShowLoanDueTodayInterest] = useState(true)
+  const [showLoanDisbursedCount, setShowLoanDisbursedCount] = useState(true)
+  const [showLoanOpenCount, setShowLoanOpenCount] = useState(true)
+  const [showLoanClosedCount, setShowLoanClosedCount] = useState(true)
 
   const [loanDueTodayDate, setLoanDueTodayDate] = useState({ start: '', end: '' });
   const [loanDueTodayPrincipalDate, setLoanDueTodayPrincipalDate] = useState({ start: '', end: '' });
