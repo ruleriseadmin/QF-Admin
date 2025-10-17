@@ -236,7 +236,7 @@ useEffect(() => {
           }if(sendPushNotification){
              setSuccess(response?.data?.message || 'Notification sent successfully');
               setNotificationOpen(true);
-             setSendPushNotification(false);
+             resetQuery();
               return;
           }
         
@@ -260,6 +260,7 @@ useEffect(() => {
        }
       }
        fetchCustomers();
+       return () => controller.abort();
      }, [page, selectedSort,kycStage,refetch,loanCountTo,loanCountFrom, paginate,sendPushNotification, searchDate, selectedSelection,downloadExcel, triggerSearch, status, creditScore, source,unDefined, ageFrom, ageTo, employmentStatus,  dueStart, dueEnd]);
   
 

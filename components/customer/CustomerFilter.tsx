@@ -71,7 +71,7 @@ const applyFilter = () => {
   const params = new URLSearchParams(window.location.search);
 
   // ✅ Update or add new filters
-  if (loanStatus) params.set('status', loanStatus);
+  if (loanStatus) params.set('loanStatus', loanStatus);
   if (creditScore) params.set('creditScore', creditScore);
   if (regSource) params.set('source', regSource);
   if (employmentStatus) params.set('employmentStatus', employmentStatus);

@@ -259,7 +259,7 @@ const toggleLoanHistory = () => {
       }if(sendPushNotification){
              setSuccess(response?.data?.message || 'Notification sent successfully');
               setNotificationOpen(true);
-             setSendPushNotification(false);
+              resetQuery();
               return;
           }
         setLoans(response?.data?.data?.loans || []);
@@ -283,6 +283,7 @@ const toggleLoanHistory = () => {
     };
   
     fetchLoans();
+    return () => controller.abort();
 
   }, [page, triggerSearch, sendPushNotification,refetch,  searchDate.startDate,source,downloadExcel,  searchDate.endDate, selectedSelection, itemsPerPage, selectedSort, due_start, loanCountTo,loanCountFrom, due_end, dpd, amountFrom, amountTo, createdToday, dueToday]);
   
