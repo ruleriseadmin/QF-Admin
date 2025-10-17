@@ -40,7 +40,7 @@ const CustomerTable: React.FC = () => {
   const searchParams = useSearchParams();
   const start = searchParams.get('start') 
   const end = searchParams.get('end')
-  const status = searchParams.get('status')
+  const loanStat = searchParams.get('loanStatus')
   const creditScore = searchParams.get('creditScore')
   const source = searchParams.get('source')
   const ageFrom = searchParams.get('ageFrom')
@@ -192,7 +192,7 @@ useEffect(() => {
           queryObj.send_push_notification = 'true';
           queryObj.title = pushTitle;
           queryObj.body = pushBody;
-          queryObj.status = pushStatus;
+          
         }
         if(selectedSelection === 'fullyRegistered'){
           queryObj.fully_registered = 'true';
@@ -206,8 +206,8 @@ useEffect(() => {
         if(selectedSelection === 'noloan'){
           queryObj.no_loan = 'true';
         }
-        if(status){
-          queryObj.loan_status = status.toUpperCase();
+        if(loanStat){
+          queryObj.loan_status = loanStat.toUpperCase();
         }
         if (selectedSort === 'old') {
           queryObj.sort_direction = 'asc';
@@ -247,7 +247,7 @@ useEffect(() => {
           }if(sendPushNotification){
              setSuccess(response?.data?.message || 'Notification sent successfully');
               setNotificationOpen(true);
-            setSendPushNotification(false);
+            resetQuery();
               return;
           }
         
@@ -271,7 +271,8 @@ useEffect(() => {
        }
       }
        fetchCustomers();
-     }, [page, selectedSort,loanCountTo,amountFrom, sendPushNotification, amountTo,refetch,loanCountFrom,  paginate, crc, searchDate, selectedSelection,downloadExcel, triggerSearch, status, creditScore, source,unDefined, ageFrom, ageTo, employmentStatus,  dueStart, dueEnd]);
+        return () => controller.abort();
+     }, [page, selectedSort,loanCountTo,amountFrom, sendPushNotification, amountTo,refetch,loanCountFrom,  paginate, crc, searchDate, selectedSelection,downloadExcel, triggerSearch, loanStat, creditScore, source,unDefined, ageFrom, ageTo, employmentStatus,  dueStart, dueEnd]);
   
 
 

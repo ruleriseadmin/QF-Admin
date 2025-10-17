@@ -190,7 +190,7 @@ useEffect(() => {
         }if(sendPushNotification){
              setSuccess(response?.data?.message || 'Notification sent successfully');
               setNotificationOpen(true);
-              setSendPushNotification(false);
+             resetQuery();
               
               return;
           }
@@ -216,6 +216,7 @@ useEffect(() => {
       };
 
     fetchTransactions();
+     return () => controller.abort();
   }, [page, triggerSearch,paginate, searchDate,sendPushNotification, selectedSelection, selectedSort, id, downloadExcel, amountFrom, amountTo, status]);
 
 
@@ -292,7 +293,6 @@ useEffect(() => {
   };
 
   
-
 
   return (
     <div className="w-full mt-10  md:ml-8   h-auto font-montserrat ">
