@@ -125,7 +125,7 @@ const blacklistUser = async () => {
           }else {
           setError(  error?.response?.data?.message || error?.response?.message || 'An error occurred, please try again');
           }
-    const url = `${window.location.pathname}?status=${encodeURIComponent('error')}&message=${encodeURIComponent(error)}`;
+    const url = `${window.location.pathname}?status=${encodeURIComponent('error')}&message=${encodeURIComponent(error?.response?.data?.message || error?.response?.message || 'An error occurred, please try again')}`;
     router.push(url);
     toggleLoanSlide();
   } finally {

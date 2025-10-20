@@ -273,6 +273,7 @@ useEffect(() => {
     {name:'Penalty',value:'penalty'},
     {name: 'Card Tokenization', value:'card_tokenization'},
     {name: 'Unapplied Payment', value:'unapplied_payment'},
+    {name: 'unapplied Payment(Card)', value:'unapplied_card_tokenization'},
   ];
 
   const resetQuery = () => {
@@ -336,7 +337,7 @@ useEffect(() => {
                   
 
                 {/* Dropdown Content */}
-                <div className="absolute lg:top-[231px] lg:left-[276px] md:top-[232px] md:left-[240px] left-[60px] w-[259px]  min-h-[138px] h-auto bg-white rounded-xl shadow-lg font-montserrat font-medium z-50">
+                <div className="absolute lg:top-[231px] lg:left-[276px] md:top-[232px] md:left-[240px] left-[60px] w-[259px]  min-h-[138px] h-auto pb-2 bg-white rounded-xl shadow-lg font-montserrat font-medium z-50">
                   {selection.map((select: any, index: number) => (
                     <button
                       key={index}

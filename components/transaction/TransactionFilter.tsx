@@ -34,6 +34,7 @@ const TransactionFilter: React.FC<TransactionFilterProps> = ({ isOpen, toggleTra
     { name: 'Refund', value: 'refund' },
     { name: 'Card Tokenization', value: 'card_tokenization' },
     { name: 'Unapplied Payment', value: 'unapplied_payment' },
+    { name: 'Unapplied Payment(Card)', value: 'unapplied_card_tokenization' },
    
   ];
 
@@ -163,6 +164,7 @@ const applyFilter = () => {
                     <option value="refund" className="font-medium text-[15px]">refund</option>
                     <option value="card_tokenization" className="font-medium text-[15px]">Card Tokenization</option>
                     <option value="unapplied_payment" className="font-medium text-[15px]">Unapplied Payment</option>
+                    <option value="unapplied_card_tokenization" className="font-medium text-[15px]">Unapplied Payment(Card)</option>
                 </select>
                 </div>
 
