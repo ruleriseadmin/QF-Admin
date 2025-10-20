@@ -40,6 +40,7 @@ const [openKyC, setOpenKyC] = useState(false);
   const [loanHistory, setLoanHistory] = useState<any[]>([]);
   const [openHistory, setOpenHistory] = useState(false);
   const [type,setType] = useState<string>('temporary');
+  const [reason,setReason] = useState<string>('');
   const [amount,setAmount] = useState<number>(0)
   const [showBlacklistModal, setShowBlacklistModal] = useState(false);
   const router = useRouter();
@@ -101,7 +102,7 @@ const blacklistUser = async () => {
   setLoading(true);
 
   try {
-    let payload: Record<string, any> = { user_id: idToBlacklist };
+    let payload: Record<string, any> = { user_id: idToBlacklist, reason: reason };
 
     if (user?.blacklisted) {
       payload.type = type;
@@ -109,6 +110,7 @@ const blacklistUser = async () => {
       if (type === 'temporary') {
         payload.eligible_amount = amount;
       }
+      
     }
 
     const response = await apiClient.post(`/customer/blacklist`, payload);
@@ -121,7 +123,7 @@ const blacklistUser = async () => {
     if (error?.status === 401) {
             setError('Unauthorized access. You do not have permission to view this resource.');
           }else {
-          setError(error?.response?.data?.message || error?.message || 'An error occurred, please try again');
+          setError(  error?.response?.data?.message || error?.response?.message || 'An error occurred, please try again');
           }
     const url = `${window.location.pathname}?status=${encodeURIComponent('error')}&message=${encodeURIComponent(error)}`;
     router.push(url);
@@ -216,7 +218,7 @@ const toggleLoanHistory = () => {
             <div className='flex justify-start items-center gap-3 ml-4 pb-4 relative'>
                 <button
                 onClick={() => {
-                  user?.blacklisted ? toggleBlacklistModal() : blacklistUser();
+                toggleBlacklistModal()
                 }}
                 className='bg-[#DA3737] font-semibold text-[15px] px-4 py-2 w-[129px] h-[40px] text-[#FFFFFF] rounded-[22px]'
                 >
@@ -333,8 +335,9 @@ const toggleLoanHistory = () => {
       className="absolute top-[85px] p-6 left-[450px] font-poppins w-[337px] min-h-[287px] h-auto bg-white rounded-[8px] shadow-lg  font-medium z-50"
     >
       {/* radio + amount input */}
-      
-       <label htmlFor="permanent" className="ml-8 text-[#282828] mb-2 font-semibold">Permanent</label>
+      {user?.blacklisted && (
+      <div>
+         <label htmlFor="permanent" className="ml-8 text-[#282828] mb-2 font-semibold">Permanent</label>
       <div className="flex items-center mb-4">
         <input
           type="radio"
@@ -356,6 +359,7 @@ const toggleLoanHistory = () => {
           onChange={(e) => setAmount(Number(e.target.value))}
         />
       </div>
+      {/* temporary */}
        <label htmlFor="temporary" className="ml-8 text-[#282828] mb-2 font-semibold">Temporary</label>
       <div className="flex items-center mb-6">
         <input
@@ -377,11 +381,32 @@ const toggleLoanHistory = () => {
           onChange={(e) => setAmount(Number(e.target.value))}
         />
       </div>
+        
+      </div>
+
+      )}
+       
+
+      {/* reason */}
+       
+     
+      <div className="mb-6">
+        <label htmlFor="reason" className="ml-1 text-[#282828] mb-2 font-semibold">Reason</label>
+        <textarea
+          id="reason"
+          rows={2}
+          placeholder="Enter reason"
+          className="border border-[#D0D5DD] shadow-blacklist w-full h-[80px] rounded-[8px] px-2 py-1 resize-none"
+          value={reason}
+          onChange={(e) => setReason(e.target.value)}
+        ></textarea>
+      </div>
+   
 
       <button
         onClick={blacklistUser}
-        className="bg-[#111111] ml-8 disabled:opacity-45 w-[115px] h-[41px] items-center rounded-[22px] text-white font-semibold flex justify-center text-[15px] "
-        disabled={type === 'temporary' && amount === 0 || loading}
+        className="bg-[#111111]  disabled:opacity-45 w-[115px] h-[41px] items-center rounded-[22px] text-white font-semibold flex justify-center text-[15px] "
+        disabled={(user?.blacklisted && type === 'temporary' && amount === 0) ||  reason === '' || loading}
       >
         {loading ? 'Updating...' : 'Update'}
       </button>
