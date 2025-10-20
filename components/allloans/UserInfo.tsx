@@ -268,9 +268,17 @@ const UserInfo:React.FC<UserInfoProps> = ({info,setRefetch,bvnSlide}) => {
         {/* Card Details */}
         {cards?.map((card:any, index:number) => (
         <div className='mr-10 mt-8' key={index}>
-        <p className='text-[#282828] flex justify-between items-center  mb-2 font-semibold text-[16px] '>
+         <p className='text-[#282828] flex justify-between items-center  mb-2 font-semibold text-[16px] '>
               <span className='text-[#1922AB] '>Card Details ({index + 1})</span>
-              <span className='font-medium text-[15px]'>{card?.brand}</span>
+               {!card?.active && 
+                  <p className='text-[#FFFFFF] flex justify-center w-[79px] h-[28px] bg-[#DA3737] rounded-[22px] text-[16px] '>
+              <span className=' '>Expired</span>
+              
+          </p>}
+          </p>
+           <p className='text-[#282828] flex justify-between items-center  mb-2 font-semibold text-[16px] '>
+              <span className=' '>Card type</span>
+              <span className='font-medium text-[15px]'>{card?.brand || '-'}</span>
           </p>
           <p className='text-[#282828] flex justify-between items-center  mb-2 font-semibold text-[16px] '>
               <span className=' '>Card number</span>
