@@ -337,7 +337,7 @@ useEffect(() => {
                   
 
                 {/* Dropdown Content */}
-                <div className="absolute lg:top-[231px] lg:left-[276px] md:top-[232px] md:left-[240px] left-[60px] w-[259px]  min-h-[138px] h-auto pb-2 bg-white rounded-xl shadow-lg font-montserrat font-medium z-50">
+                <div className="absolute lg:top-[231px] lg:left-[276px] md:top-[232px] md:left-[240px] left-[60px] w-[315px]  min-h-[138px] h-auto pb-2 bg-white rounded-xl shadow-lg font-montserrat font-medium z-50">
                   {selection.map((select: any, index: number) => (
                     <button
                       key={index}
