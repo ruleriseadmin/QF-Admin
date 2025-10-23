@@ -187,7 +187,7 @@ const UserLoan: React.FC<UserLoanProps> = ({loanInfo,loanHistory=false}) => {
         </p>
         <p className='text-[#282828] flex justify-between items-center mx-6 mb-2 font-semibold text-[16px] '>
             <span className=' '>Amount Disbursed</span>
-            <span className='font-medium text-[15px]'>{formatCurrency(loanInfo?.amount)}</span>
+            <span className='font-medium text-[15px]'>{formatCurrency(loanInfo?.disbursed_amount)}</span>
         </p>
         <p className='text-[#282828] flex justify-between items-center mx-6 mb-2 font-semibold text-[16px] '>
             <span className=' '>{loanInfo?.status === 'OPEN' ? 'Amount Due' : 'Original Amount Due'}</span>
