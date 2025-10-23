@@ -299,7 +299,7 @@ const toggleLoanHistory = () => {
     </div>
 
     {/* Scrollable Loan Cards Section */}
-    <div className={`relative ${toggleType === 'loan' && (window.location.pathname === '/customers' || window.location.pathname === '/kyc') ? 'mt-[290px] overflow-y-auto pb-10' : toggleType === 'loan' && window.location.pathname === '/loans' ? 'mt-[150px] overflow-y-auto pb-10' : 'mt-[120px] overflow-auto'} z-0 h-[calc(100vh-170px)]`}>
+    <div className={`relative ${toggleType === 'loan' && (window.location.pathname === '/customers' || window.location.pathname === '/kyc') ? 'mt-[170px] overflow-y-auto pb-10' : toggleType === 'loan' && window.location.pathname === '/loans' ? 'mt-[150px] overflow-y-auto pb-10' : 'mt-[120px] overflow-auto'} z-0 h-[calc(100vh-170px)]`}>
   {toggleType === 'loan' ? (
     window.location.pathname === '/customers' ||  window.location.pathname === '/kyc' ? (
       dataToDisplay?.map((loan: any, index: number) => (
