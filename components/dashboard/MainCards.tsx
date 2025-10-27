@@ -122,7 +122,7 @@ useEffect(() => {
   }
 }, [queryStart, queryEnd]);
 
-console.log(lastUpdatedField)
+
 
     
   return (

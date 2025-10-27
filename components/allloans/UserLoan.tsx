@@ -19,6 +19,7 @@ const UserLoan: React.FC<UserLoanProps> = ({loanInfo,loanHistory=false}) => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState('');
   const [error, setError] = useState('');
+  
 
   const toggleProcessingModal = () => {
     setOpenProcessingModal(!openProcessingModal);
@@ -185,6 +186,16 @@ const UserLoan: React.FC<UserLoanProps> = ({loanInfo,loanHistory=false}) => {
             <span className=' '>Loan Source</span>
             <span className='font-medium text-[15px]'>{loanInfo?.source}</span>
         </p>
+        {
+          loanInfo?.has_upfront_interest && (
+            <p className='text-[#282828] flex justify-between items-center mx-6 mb-2 font-semibold text-[16px] '>
+            <span className=' '>Loan Amount </span>
+            <span className='font-medium text-[15px]'>{formatCurrency(loanInfo?.amount)}</span>
+        </p>
+            
+          )
+
+        }
         <p className='text-[#282828] flex justify-between items-center mx-6 mb-2 font-semibold text-[16px] '>
             <span className=' '>Amount Disbursed</span>
             <span className='font-medium text-[15px]'>{formatCurrency(loanInfo?.disbursed_amount)}</span>
@@ -296,7 +307,7 @@ const UserLoan: React.FC<UserLoanProps> = ({loanInfo,loanHistory=false}) => {
 
 
     )}
-    {(window.location.pathname === '/customers' || window.location.pathname === '/kyc'|| loanHistory) && (
+    {(window.location.pathname === '/customers' || window.location.pathname === '/kyc' || window.location.pathname === '/blacklisted'|| loanHistory) && (
         
         <div className=" bg-[#EBEBEB] lg:w-[487px] md:w-[487px] w-[410px] rounded-[12px] min-h-[233px] h-auto mx-auto  mt-4 ">
         <div className='pb-4'>
@@ -314,9 +325,19 @@ const UserLoan: React.FC<UserLoanProps> = ({loanInfo,loanHistory=false}) => {
             <span className=' '>Loan Source</span>
             <span className='font-medium text-[15px]'>{loanInfo?.source}</span>
         </p>
+         {
+          loanInfo?.has_upfront_interest && (
+            <p className='text-[#282828] flex justify-between items-center mx-6 mb-2 font-semibold text-[16px] '>
+            <span className=' '>Loan Amount </span>
+            <span className='font-medium text-[15px]'>{formatCurrency(loanInfo?.amount)}</span>
+        </p>
+            
+          )
+
+        }
         <p className='text-[#282828] flex justify-between items-center mx-6 mb-2 font-semibold text-[16px] '>
             <span className=' '>Amount Disbursed</span>
-            <span className='font-medium text-[15px]'>{formatCurrency(loanInfo?.amount)}</span>
+            <span className='font-medium text-[15px]'>{formatCurrency(loanInfo?.disbursed_amount)}</span>
         </p>
         <p className='text-[#282828] flex justify-between items-center mx-6 mb-2 font-semibold text-[16px] '>
         <span className=' '>{loanInfo?.status === 'OPEN' ? 'Amount Due' : 'Original Amount Due'}</span>

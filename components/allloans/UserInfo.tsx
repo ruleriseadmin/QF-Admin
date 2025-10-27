@@ -28,7 +28,7 @@ const UserInfo:React.FC<UserInfoProps> = ({info,setRefetch,bvnSlide}) => {
     // Function to fetch images
     const fetchImageData = async () => {
         try {
-            const response = await apiClient.get(`/customer/verification_images/${window.location.pathname === '/customers' || window.location.pathname === '/kyc' || bvnSlide ? info?.id : info?.user_id}`);
+            const response = await apiClient.get(`/customer/verification_images/${window.location.pathname === '/customers' || window.location.pathname === '/kyc' || window.location.pathname === '/blacklisted' || bvnSlide ? info?.id : info?.user_id}`);
             const images = response?.data?.data || {};
 
             setImageData(images);
@@ -57,7 +57,7 @@ const UserInfo:React.FC<UserInfoProps> = ({info,setRefetch,bvnSlide}) => {
     //function to refetch bvn details
     const refetchBvnDetails = async (ignoreStored=false) => {
         try {
-            const idToUse = window.location.pathname === '/customers' || window.location.pathname === '/kyc' || bvnSlide ? info?.id : info?.user_id
+            const idToUse = window.location.pathname === '/customers' || window.location.pathname === '/blacklisted' || window.location.pathname === '/kyc' || bvnSlide ? info?.id : info?.user_id
             const bvn = info?.bvn_details?.bvn
             if(!bvn || !idToUse) return
             setLoading(true)

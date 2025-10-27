@@ -92,7 +92,7 @@ useEffect(() => {
   
 const blacklistUser = async () => {
   const idToBlacklist =
-    window.location.pathname === '/customers' || window.location.pathname === '/kyc' || bvnSlide ? user?.id : user?.user_id;
+    window.location.pathname === '/customers' || window.location.pathname === '/kyc' || window.location.pathname === '/blacklisted' || bvnSlide ? user?.id : user?.user_id;
 
   if (!idToBlacklist) {
     console.log('User ID is required');
@@ -170,9 +170,9 @@ const toggleLoanHistory = () => {
         {toggleType === 'loan' && (
             <>
             <div className='ml-4'>
-            <p className='text-[18px] font-bold text-[#282828] my-2'>{window.location.pathname === '/customers' || bvnSlide || window.location.pathname === '/kyc' ? 'Loan History' : 'Loan Details'}</p>
+            <p className='text-[18px] font-bold text-[#282828] my-2'>{window.location.pathname === '/customers' || window.location.pathname === '/blacklisted' || bvnSlide || window.location.pathname === '/kyc' ? 'Loan History' : 'Loan Details'}</p>
             <p className='text-[16px] font-medium text-[#282828] my-2'>{`${user.profile?.first_name} ${user.profile?.last_name}`}, {user.phone_number || user.profile?.phone_number}</p>
-            {window.location.pathname === '/customers' ? (
+            {window.location.pathname === '/customers' || window.location.pathname === '/blacklisted' ? (
                <div className='flex justify-start gap-8 my-6 items-center '>
                <button
              onClick={() => setSelectedRows('all')}
@@ -299,9 +299,9 @@ const toggleLoanHistory = () => {
     </div>
 
     {/* Scrollable Loan Cards Section */}
-    <div className={`relative ${toggleType === 'loan' && (window.location.pathname === '/customers' || window.location.pathname === '/kyc') ? 'mt-[170px] overflow-y-auto pb-10' : toggleType === 'loan' && window.location.pathname === '/loans' ? 'mt-[150px] overflow-y-auto pb-10' : 'mt-[120px] overflow-auto'} z-0 h-[calc(100vh-170px)]`}>
+    <div className={`relative ${toggleType === 'loan' && (window.location.pathname === '/customers' || window.location.pathname === '/kyc' || window.location.pathname === '/blacklisted') ? 'mt-[170px] overflow-y-auto pb-10' : toggleType === 'loan' && window.location.pathname === '/loans' ? 'mt-[150px] overflow-y-auto pb-10' : 'mt-[120px] overflow-auto'} z-0 h-[calc(100vh-170px)]`}>
   {toggleType === 'loan' ? (
-    window.location.pathname === '/customers' ||  window.location.pathname === '/kyc' ? (
+    window.location.pathname === '/customers' ||  window.location.pathname === '/kyc' || window.location.pathname === '/blacklisted' ? (
       dataToDisplay?.map((loan: any, index: number) => (
         <UserLoan key={index} loanInfo={loan}  />
       ))
@@ -316,7 +316,7 @@ const toggleLoanHistory = () => {
       </div>
       {openKyC && (
         <Kyc isOpen={openKyC} togglekyc={toggleKyc}  
-        id={window.location.pathname === '/customers' || window.location.pathname === '/kyc' || bvnSlide ? user?.id : user?.user_id}/>
+        id={window.location.pathname === '/customers' || window.location.pathname === '/kyc' || window.location.pathname === '/blacklisted' || bvnSlide ? user?.id : user?.user_id}/>
       )}
       {openHistory && (
         <LoanHistory isOpen={openHistory} toggleLoanHistory={toggleLoanHistory}  loanHistory={loanHistory}/>
