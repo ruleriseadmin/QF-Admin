@@ -18,9 +18,9 @@ import { saveToExcel } from '@/utils/loan';
 import PushNotificationModal from '@/components/customer/PushNotificationModal';
 
 
-const CustomerTable: React.FC = () => {
+const BlacklistedTable: React.FC = () => {
   const [page, setPage] = useState(1);
-  const itemsPerPage = 10; // Items per page
+  const itemsPerPage = 50; // Items per page
    const [selectedRows, setSelectedRows] = useState<any[]>([]);
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [customers, setCustomers] = useState<any>([]);
@@ -31,7 +31,7 @@ const CustomerTable: React.FC = () => {
   const [selectedSort, setSelectedSort] = useState('new');
   const [searchWord, setSearchWord] = useState('');
   const [openSelection, setOpenSelection] = useState(false);
-  const [selectedSelection, setSelectedSelection] = useState('All customers');
+  const [selectedSelection, setSelectedSelection] = useState('Blacklisted customers');
   const [openFilter, setOpenFilter] = useState(false);
   const [isExiting, setIsExiting] = useState(false)
   const [openLoanSlide, setOpenLoanSlide] = useState(false)
@@ -40,7 +40,7 @@ const CustomerTable: React.FC = () => {
   const searchParams = useSearchParams();
   const start = searchParams.get('start') 
   const end = searchParams.get('end')
-  const loanStat = searchParams.get('loanStatus')
+  const loan_status = searchParams.get('loanStatus')
   const creditScore = searchParams.get('creditScore')
   const source = searchParams.get('source')
   const ageFrom = searchParams.get('ageFrom')
@@ -48,6 +48,7 @@ const CustomerTable: React.FC = () => {
   const loanCountFrom = searchParams.get('loanCountFrom');
   const ageTo = searchParams.get('ageTo')
   const employmentStatus = searchParams.get('employmentStatus')
+  const blacklisted = searchParams.get('blacklisted')
   const defaulted = searchParams.get('defaulted')
   const neverDefaulted = searchParams.get('neverDefaulted')
   const fullyRegistered = searchParams.get('fullyRegistered')
@@ -76,6 +77,9 @@ const CustomerTable: React.FC = () => {
   const closedLoansCustomers = searchParams.get('closedLoansCustomers') || '';
   const [success, setSuccess] = useState('');
   const [refetch,setRefetch] = useState<boolean>(false)
+  const [openReasonId, setOpenReasonId] = useState<number | null>(null);
+  const [openReasonModal,setOpenReasonModal] = useState(false)
+
 
 const [searchDate, setSearchDate] = useState({
   startDate: '',
@@ -93,6 +97,9 @@ useEffect(() => {
    setSendPushNotification(true)
   }
   
+  if(blacklisted){
+    setSelectedSelection('blacklisted')
+  }
   if(defaulted){
     setSelectedSelection('defaulted')
   }if(neverDefaulted){
@@ -117,7 +124,7 @@ useEffect(() => {
       endDate: ''
     })
   }
-}, [start, end, pushBody, pushTitle, pushStatus, send_push_notification, closedLoansCustomers,defaulted, loaned, noLoan, reset, neverDefaulted,fullyRegistered,partiallyRegistered]);
+}, [start, end, pushBody, pushTitle, pushStatus, send_push_notification, blacklisted,closedLoansCustomers,defaulted, loaned, noLoan, reset, neverDefaulted,fullyRegistered,partiallyRegistered]);
 
 //cleanup url
 useEffect(() => {
@@ -126,6 +133,11 @@ useEffect(() => {
   }
 
 },[start,end])
+
+const toggleReason = () => {
+  setOpenReasonModal(!openReasonModal)
+}
+
 
 
 
@@ -145,9 +157,8 @@ useEffect(() => {
       setLoading(true);
         const queryObj: Record<string, string> = { 
           page: String(page), 
-          per_page: String(itemsPerPage)
-          
-          
+          per_page: String(itemsPerPage),
+          blacklisted: 'true',
         };
         
         if (triggerSearch && searchWord ) {
@@ -167,6 +178,10 @@ useEffect(() => {
         if(downloadExcel){
           queryObj.download_excel = 'true';
         }
+  
+       if(selectedSelection === 'blacklisted'){
+          queryObj.blacklisted = 'true';
+        }
          if (amountFrom && amountTo) {
           queryObj.amount_range = `${amountFrom}${' - '}${amountTo}`;
         }
@@ -184,7 +199,7 @@ useEffect(() => {
           queryObj.send_push_notification = 'true';
           queryObj.title = pushTitle;
           queryObj.body = pushBody;
-          
+          queryObj.status = pushStatus;
         }
         if(selectedSelection === 'fullyRegistered'){
           queryObj.fully_registered = 'true';
@@ -198,8 +213,8 @@ useEffect(() => {
         if(selectedSelection === 'noloan'){
           queryObj.no_loan = 'true';
         }
-        if(loanStat){
-          queryObj.loan_status = loanStat.toUpperCase();
+        if(loan_status){
+          queryObj.loan_status = loan_status.toUpperCase();
         }
         if (selectedSort === 'old') {
           queryObj.sort_direction = 'asc';
@@ -263,8 +278,8 @@ useEffect(() => {
        }
       }
        fetchCustomers();
-        return () => controller.abort();
-     }, [page, selectedSort,loanCountTo,amountFrom, sendPushNotification, amountTo,refetch,loanCountFrom,  paginate, crc, searchDate, selectedSelection,downloadExcel, triggerSearch, loanStat, creditScore, source,unDefined, ageFrom, ageTo, employmentStatus,  dueStart, dueEnd]);
+       return () => controller.abort();
+     }, [page, selectedSort,loanCountTo,amountFrom, sendPushNotification, amountTo,refetch,loanCountFrom,  paginate, crc, searchDate, selectedSelection,downloadExcel, triggerSearch, loan_status, creditScore, source,unDefined, ageFrom, ageTo, employmentStatus,  dueStart, dueEnd]);
   
 
 
@@ -338,12 +353,11 @@ const handleSelectAll = () => {
       width: '50px',
     },
     { name: 'FULL NAME', cell: (row: any) => `${row?.profile?.first_name} ${row?.profile?.last_name}`},
-    { name: 'DATE REG', cell: (row: any) => `${formatDate(row.created_at.split(' ')[0])} ${formatTime(row.created_at.split(' ')[1])}` },
+    { name: 'FLAG DATE', cell: (row: any) => `${formatDate(row.date_blacklisted?.split(' ')[0])} ${formatTime(row.date_blacklisted.split(' ')[1])}` },
     { name: 'PHONE NO', selector: 'phone_number' },
-    { name: 'EMAIL', cell: (row: any) => `${row?.profile?.email}` },
-    { name: 'LOAN COUNT', selector: 'loan_count' },
-    { name: 'DEFAULT', selector: 'default_count' },
-    { name: 'SCORE', selector: 'credit_score' },
+     { name: 'DATE REG', cell: (row: any) => `${formatDate(row.created_at.split(' ')[0])} ${formatTime(row.created_at.split(' ')[1])}` },
+    { name: 'LOAN CYCLE', selector: 'loan_count' },
+    {name: 'NOTE', selector: 'reason_for_blacklist'},
     { name: 'ACTIONS', selector: 'actions' },
   ];
 
@@ -353,18 +367,7 @@ const handleSelectAll = () => {
     setOpenSelection(!openSelection);
   };
 
-  const selection = [
-    { name: 'All', value: 'All' },
-    { name: 'Loaned', value: 'loan' },
-    { name: 'No loan', value: 'noloan' },
-    { name: 'Blacklisted', value: 'blacklisted' },
-    {name: 'Closed loan',value:'closedLoan'},
-    { name: 'Defaulted', value: 'defaulted' },
-    { name: 'Never Defaulted', value: 'neverDefaulted' },
-    {name: 'Fully Registered',value: 'fullyRegistered'},
-    {name: 'Partially Registered',value: 'partiallyRegistered'}
-  ];
-
+  
 //toggle loan slide
 const toggleLoanSlide = () => {
   setOpenLoanSlide(!openLoanSlide);
@@ -393,69 +396,8 @@ const resetQuery = () => {
       <div className="flex md:overflow-x-auto justify-between lg:overflow-hidden overflow-x-auto items-center gap-8 w-full h-auto mb-10  text-[#5A5A5A] text-[16px] ">
         <div className="flex items-center justify-between gap-6 md:gap-6 lg:gap-0 w-full md:mr-10 " >
           {loading && <LoadingPage />}
-          {/* Dropdown Section */}
-          <div className="">
-            <div
-              onClick={toggleSelection}
-              className="flex items-center hover:cursor-pointer bg-[#E1E3E4] rounded-full lg:min-w-[259px] lg:w-auto md:min-w-[241px] md:w-auto min-w-[249px] w-auto h-[48px]  md:ml-2 ml-4 lg:ml-0 md:px-2"
-            >
-              {/* Left Section */}
-              <div className="flex items-center flex-grow ml-3">
-                <Image
-                  src="/images/calendar-2.png"
-                  alt="Logo"
-                  width={18}
-                  height={18}
-                />
-                <p className="text-[15px] text-[#282828] font-medium ml-1">
-                  Sortby : {selection.find((select) => select.value === selectedSelection)?.name || 'All' }
-                </p>
-              </div>
-              {/* Right Section */}
-              <button>
-                <TiArrowSortedDown className="text-[#828282] text-[18px] mr-3" />
-              </button>
-            </div>
-
-            {openSelection && (
-              <>
-                {/* Background Overlay */}
-                <div
-                  className="fixed inset-0 bg-black bg-opacity-50 z-50"
-                  onClick={() => setOpenSelection(false)}
-                ></div>
-                  
-
-                {/* Dropdown Content */}
-                <div className="absolute lg:top-[457px] pb-3 lg:left-[258px] md:top-[592px] md:left-[232px] left-[51px] w-[269px] min-h-[138px] h-auto bg-white rounded-xl shadow-lg font-montserrat font-medium z-50">
-                  {selection.map((select: any, index: number) => (
-                    <button
-                      key={index}
-                      onClick={() => {
-                        setSelectedSelection(select.value);
-                        setOpenSelection(false); // Close dropdown after selection
-                      }}
-                      className={`w-full text-start ml-4 text-[14px] text-[#282828] ${index === 0 ? 'mt-4' : 'mt-2'}`}
-                    >
-                      <div className="flex justify-start text-[#282828] items-center font-medium gap-3  z-50">
-                        <p>{select.name} customers</p>
-                        {select.value === selectedSelection && (
-                          <Image
-                            src="/images/good.png"
-                            alt="good"
-                            height={17}
-                            width={17}
-                          />
-                        )}
-                      </div>
-                    </button>
-                  ))}
-                </div>
-                
-              </>
-              
-            )}
-          </div>
+          {/* Filter Section */}
+        
           <div className="relative">
                      <div
                        onClick={toggleFilter}
@@ -556,24 +498,19 @@ const resetQuery = () => {
       <div className=" md:ml-4 lg:min-w-[1088px]  md:mr-10 lg:w-auto   lg:ml-0 ml-4  mr-2  font-montserrat lg:mr-8  h-auto rounded-[12px] lg:overflow-hidden bg-[#FFFFFF] shadow-customshadow4 border border-solid border-[#DCDCDC]">
       <div className="lg:overflow-x-hidden md:overflow-x-auto  overflow-x-auto mb-12 ">
   <table className="w-full   mt-2 ml-1">
-    <thead className="bg-[#282828] w-full text-[#FFFFFF] h-[46px] font-bold text-[12px] text-left">
+    <thead className="bg-[#9E133F] w-full text-[#FFFFFF] h-[46px] font-bold text-[12px] text-left">
       <tr>
         {columns.map((col, index) => (
           <th
             key={index}
             style={
-              col.name === 'EMAIL'
-                ? { width: '140px', textAlign: 'left' }
-                : col.name === 'DATE REG'
-                ? { width: '125px', textAlign: 'left' }
+              col.name === 'NOTE'
+                ? { width: '173px', textAlign: 'left' }
                 : col.name === 'FULL NAME'
                 ? { width: '173px', textAlign: 'left' }
-                : col.name === '#'
-                ? { width: '60px', textAlign: 'left' }
-                : col.name === 'LOAN CYCLE'
-                ? { width: '113px', textAlign: 'left' }
                 : { textAlign: 'left' }
             }
+           
             className={`px-3 py-2 ${
               index === 0 ? 'rounded-tl-[18px] rounded-bl-[18px]' : ''
             } ${index === columns.length - 1 ? 'rounded-tr-[18px] rounded-br-[18px]' : ''}`}
@@ -590,10 +527,9 @@ const resetQuery = () => {
           {columns.map((col, index) => (
             <td
               key={index}
-              className="px-3 pt-7 pb-4 border-b font-montserrat border-[#E6E6E6] text-left"
+              className="px-3 pt-7 pb-4 border-b font-montserrat border-[#E6E6E6] relative text-left"
             >
-              {selectedSelection === 'Blacklisted' && (col.name === 'LOAN CYCLE' || col.name === 'DEFAULT') ? 
-              "" : col.name === 'ACTIONS' ? (
+              {col.name === 'ACTIONS' ? (
                 <div className="flex justify-between items-center w-full gap-1">
                   <button
                     onClick={() => {
@@ -629,19 +565,57 @@ const resetQuery = () => {
                       } cursor-pointer`}
                     />
                   </button>
-                  {selectedSelection === 'Blacklisted' ? (
-                    <button className='w-[122px] h-[30px] rounded-[18px] bg-[#DA3737] px-2  text-[#FFFFFF] text-[15px]'>
-                      Remove
-                    </button>
-                  ) : (
-                    <BsThreeDots
-                    className={`text-[#282828] text-[24px] ${
-                      selectedRows.length === customers.length ? 'opacity-50' : ''
-                    }`}
-                  />
-                  )}
-                 
+                  
                 </div>
+              ) : col.name === 'NOTE' ? (
+                <div
+  onClick={() => {
+    setOpenReasonId(row.reason_for_blacklist);
+    toggleReason()
+  }}
+  className="text-[#3173F3] underline cursor-pointer relative"
+>
+  {row.reason_for_blacklist
+    ? row.reason_for_blacklist.length > 16
+      ? `${row.reason_for_blacklist.slice(0, 16)}...`
+      : row.reason_for_blacklist
+    : ''}
+    
+ {openReasonModal && (
+  <>
+    {/* Overlay */}
+    <div
+      className="fixed inset-0 bg-black bg-opacity-50 z-[9998]"
+      onClick={() => toggleReason()}
+    ></div>
+   
+   
+
+
+    {/* Centered Modal */}
+    <div className="fixed top-[550px] right-[0px] -translate-x-1/2 -translate-y-1/2 z-[9999]">
+    
+      <div
+        className=" w-[405px] bg-[#FFFFFF] border border-[#DCDCDC] h-[192px]
+        p-4 rounded-[12px] shadow-xl overflow-hidden"
+      >
+       <Image
+       src={'/images/speech.png'} 
+       alt="close" 
+       width={48} 
+       height={48}
+        className="absolute -top-[30px] right-[40px] z-50"  /> 
+        <p className="text-[#1C1C1E] text-[18px] break-words overflow-hidden w-11/12 mx-auto  ">
+          {openReasonId}
+        </p>
+      </div>
+    </div>
+  </>
+)}
+
+</div>
+
+
               ) : col.cell ? (
                 col.cell(row)
               ) : (
@@ -713,4 +687,4 @@ const resetQuery = () => {
   );
 };
 
-export default CustomerTable;
+export default BlacklistedTable;

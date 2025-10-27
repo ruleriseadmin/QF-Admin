@@ -16,7 +16,6 @@ const CustomerFilter: React.FC<CustomerFilterProps> = ({ isOpen, toggleCustomerF
   const [employmentStatus, setEmploymentStatus] = useState('');
   const [loaned, setLoaned] = useState(false);
   const [noLoan, setNoLoan] = useState(false);
-  const [blacklisted, setBlacklisted] = useState(false);
   const [defaulted, setDefaulted] = useState(false);
   const [neverDefaulted, setNeverDefaulted] = useState(false);
   const [fullyRegistered, setFullyRegistered] = useState(false);
@@ -55,7 +54,6 @@ const CustomerFilter: React.FC<CustomerFilterProps> = ({ isOpen, toggleCustomerF
   const loanTypes = [
     { name: 'Loaned customers', value: 'loan' },
     { name: 'No loan customers', value: 'noloan' },
-    { name: 'Blacklisted', value: 'blacklisted' },
     { name: 'Defaulted', value: 'defaulted' },
      {name: 'Closed loan customers',value:'closedLoan'},
     {name: 'Never Defaulted', value: 'neverDefaulted'},
@@ -77,7 +75,6 @@ const applyFilter = () => {
   if (employmentStatus) params.set('employmentStatus', employmentStatus);
   if (loaned) params.set('loaned', 'true');
   if (noLoan) params.set('noLoan', 'true');
-  if (blacklisted) params.set('blacklisted', 'true');
   if (crc) params.set('crc', crc);
   if (defaulted) params.set('defaulted', 'true');
   if (neverDefaulted) params.set('neverDefaulted', 'true');
@@ -165,7 +162,7 @@ const applyFilter = () => {
                     <input
                       type="checkbox"
                       checked={
-                        (loanType.value === 'blacklisted' && blacklisted) ||
+                       
                         (loanType.value === 'defaulted' && defaulted) ||
                         (loanType.value === 'noloan' && noLoan) ||
                         (loanType.value === 'loan' && loaned) ||
@@ -178,7 +175,7 @@ const applyFilter = () => {
 
                       onChange={(e) => {
                         const isChecked = e.target.checked;
-                        if (loanType.value === 'blacklisted') setBlacklisted(isChecked);
+                        
                         if (loanType.value === 'defaulted') setDefaulted(isChecked);
                         if (loanType.value === 'noloan') setNoLoan(isChecked);
                         if (loanType.value === 'loan') setLoaned(isChecked);

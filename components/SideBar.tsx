@@ -259,6 +259,18 @@ const SideBar = () => {
       >
         Manage KYC
       </button>
+       <button 
+        onClick={(e) => {
+          e.stopPropagation();
+          router.push(`/blacklisted`);
+          setShowCustomerDropdown(false);
+        }}
+        className={`text-[#EEEEEE] hover:font-bold text-[14px] text-start mt-2 ${
+         path === 'blacklisted' ? 'font-bold' : ''
+        }`}
+      >
+        Blacklisted
+      </button>
     </div>
   )}
 </div>
