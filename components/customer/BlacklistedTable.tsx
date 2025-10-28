@@ -353,9 +353,9 @@ const handleSelectAll = () => {
       width: '50px',
     },
     { name: 'FULL NAME', cell: (row: any) => `${row?.profile?.first_name} ${row?.profile?.last_name}`},
-    { name: 'FLAG DATE', cell: (row: any) => `${formatDate(row.date_blacklisted?.split(' ')[0])} ${formatTime(row.date_blacklisted.split(' ')[1])}` },
+    { name: 'FLAG DATE', cell: (row: any) => `${formatDate(row?.date_blacklisted?.split(' ')[0])} ${formatTime(row?.date_blacklisted?.split(' ')[1])}` },
     { name: 'PHONE NO', selector: 'phone_number' },
-     { name: 'DATE REG', cell: (row: any) => `${formatDate(row.created_at.split(' ')[0])} ${formatTime(row.created_at.split(' ')[1])}` },
+     { name: 'DATE REG', cell: (row: any) => `${formatDate(row?.created_at?.split(' ')[0])} ${formatTime(row?.created_at?.split(' ')[1])}` },
     { name: 'LOAN CYCLE', selector: 'loan_count' },
     {name: 'NOTE', selector: 'reason_for_blacklist'},
     { name: 'ACTIONS', selector: 'actions' },
@@ -568,10 +568,10 @@ const resetQuery = () => {
                   
                 </div>
               ) : col.name === 'NOTE' ? (
-                <div
+               <div
   onClick={() => {
     setOpenReasonId(row.reason_for_blacklist);
-    toggleReason()
+    toggleReason();
   }}
   className="text-[#3173F3] underline cursor-pointer relative"
 >
@@ -580,40 +580,8 @@ const resetQuery = () => {
       ? `${row.reason_for_blacklist.slice(0, 16)}...`
       : row.reason_for_blacklist
     : ''}
-    
- {openReasonModal && (
-  <>
-    {/* Overlay */}
-    <div
-      className="fixed inset-0 bg-black bg-opacity-50 z-[9998]"
-      onClick={() => toggleReason()}
-    ></div>
-   
-   
-
-
-    {/* Centered Modal */}
-    <div className="fixed top-[550px] right-[0px] -translate-x-1/2 -translate-y-1/2 z-[9999]">
-    
-      <div
-        className=" w-[405px] bg-[#FFFFFF] border border-[#DCDCDC] h-[192px]
-        p-4 rounded-[12px] shadow-xl overflow-hidden"
-      >
-       <Image
-       src={'/images/speech.png'} 
-       alt="close" 
-       width={48} 
-       height={48}
-        className="absolute -top-[30px] right-[40px] z-50"  /> 
-        <p className="text-[#1C1C1E] text-[18px] break-words overflow-hidden w-11/12 mx-auto  ">
-          {openReasonId}
-        </p>
-      </div>
-    </div>
-  </>
-)}
-
 </div>
+
 
 
               ) : col.cell ? (
@@ -643,6 +611,33 @@ const resetQuery = () => {
         )}
         
       </div>
+      {openReasonModal && (
+  <>
+    {/* Overlay */}
+    <div
+      className="fixed inset-0 bg-black bg-opacity-20 "
+      onClick={toggleReason}
+    ></div>
+
+    {/* Centered Modal */}
+    <div className="fixed top-[500px] left-[1000px] -translate-x-1/2 -translate-y-1/2 ">
+      <div className="w-[405px] bg-[#FFFFFF] border z-50 border-[#DCDCDC] h-[192px] cursor-pointer
+        p-4 rounded-[12px] overflow-hidden">
+        <Image
+          src="/images/speech.png"
+          alt="close"
+          width={48}
+          height={48}
+          className="absolute -top-[30px] right-[40px] z-50"
+        />
+        <p className="text-[#1C1C1E] text-[18px] break-words overflow-hidden w-11/12 mx-auto">
+          {openReasonId}
+        </p>
+      </div>
+    </div>
+  </>
+)}
+
       {openFilter && (
         <CustomerFilter isOpen={openFilter} toggleCustomerFilter={toggleFilter} />
       )}

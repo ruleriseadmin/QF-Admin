@@ -200,10 +200,15 @@ const UserLoan: React.FC<UserLoanProps> = ({loanInfo,loanHistory=false}) => {
             <span className=' '>Amount Disbursed</span>
             <span className='font-medium text-[15px]'>{formatCurrency(loanInfo?.disbursed_amount)}</span>
         </p>
-        <p className='text-[#282828] flex justify-between items-center mx-6 mb-2 font-semibold text-[16px] '>
-            <span className=' '>{loanInfo?.status === 'OPEN' ? 'Amount Due' : 'Original Amount Due'}</span>
+         {loanInfo?.has_upfront_interest ? ( <p className='text-[#282828] flex justify-between items-center mx-6 mb-2 font-semibold text-[16px] '>
+        <span className=' '>{loanInfo?.status === 'OPEN' ? 'Amount Due' : 'Original Amount Due'}</span>
+            <span className='font-medium text-[15px]'>{formatCurrency(loanInfo?.amount)}</span>
+        </p>) : (
+           <p className='text-[#282828] flex justify-between items-center mx-6 mb-2 font-semibold text-[16px] '>
+        <span className=' '>{loanInfo?.status === 'OPEN' ? 'Amount Due' : 'Original Amount Due'}</span>
             <span className='font-medium text-[15px]'>{formatCurrency(loanInfo?.total_payable - loanInfo.penalty)}</span>
-        </p>
+        </p> 
+         )}
         { loanInfo?.loan_schedules?.filter((loan: any) => loan?.status === "partially_paid" && loanInfo?.status !== "OVERDUE")
   .map((loan: any, index: number) => (
     <div key={index}>
@@ -325,8 +330,7 @@ const UserLoan: React.FC<UserLoanProps> = ({loanInfo,loanHistory=false}) => {
             <span className=' '>Loan Source</span>
             <span className='font-medium text-[15px]'>{loanInfo?.source}</span>
         </p>
-         {
-          loanInfo?.has_upfront_interest && (
+        {loanInfo?.has_upfront_interest && (
             <p className='text-[#282828] flex justify-between items-center mx-6 mb-2 font-semibold text-[16px] '>
             <span className=' '>Loan Amount </span>
             <span className='font-medium text-[15px]'>{formatCurrency(loanInfo?.amount)}</span>
@@ -339,10 +343,16 @@ const UserLoan: React.FC<UserLoanProps> = ({loanInfo,loanHistory=false}) => {
             <span className=' '>Amount Disbursed</span>
             <span className='font-medium text-[15px]'>{formatCurrency(loanInfo?.disbursed_amount)}</span>
         </p>
-        <p className='text-[#282828] flex justify-between items-center mx-6 mb-2 font-semibold text-[16px] '>
+         {loanInfo?.has_upfront_interest ? ( <p className='text-[#282828] flex justify-between items-center mx-6 mb-2 font-semibold text-[16px] '>
+        <span className=' '>{loanInfo?.status === 'OPEN' ? 'Amount Due' : 'Original Amount Due'}</span>
+            <span className='font-medium text-[15px]'>{formatCurrency(loanInfo?.disbursed_amount)}</span>
+        </p>) : (
+           <p className='text-[#282828] flex justify-between items-center mx-6 mb-2 font-semibold text-[16px] '>
         <span className=' '>{loanInfo?.status === 'OPEN' ? 'Amount Due' : 'Original Amount Due'}</span>
             <span className='font-medium text-[15px]'>{formatCurrency(loanInfo?.total_payable - loanInfo.penalty)}</span>
-        </p>
+        </p> 
+         )}
+       
         
         { loanInfo?.loan_schedules?.filter((loan: any) => loan?.status === "partially_paid" && loanInfo?.status !== "OVERDUE")
   .map((loan: any, index: number) => (
