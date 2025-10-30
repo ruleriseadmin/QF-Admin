@@ -186,14 +186,13 @@ const UserLoan: React.FC<UserLoanProps> = ({loanInfo,loanHistory=false}) => {
             <span className=' '>Loan Source</span>
             <span className='font-medium text-[15px]'>{loanInfo?.source}</span>
         </p>
-        {
-          loanInfo?.has_upfront_interest && (
+       {loanInfo?.has_upfront_interest ? (
             <p className='text-[#282828] flex justify-between items-center mx-6 mb-2 font-semibold text-[16px] '>
             <span className=' '>Loan Amount </span>
             <span className='font-medium text-[15px]'>{formatCurrency(loanInfo?.amount)}</span>
         </p>
             
-          )
+          ) : null
 
         }
         <p className='text-[#282828] flex justify-between items-center mx-6 mb-2 font-semibold text-[16px] '>
@@ -212,18 +211,57 @@ const UserLoan: React.FC<UserLoanProps> = ({loanInfo,loanHistory=false}) => {
         { loanInfo?.loan_schedules?.filter((loan: any) => loan?.status === "partially_paid" && loanInfo?.status !== "OVERDUE")
   .map((loan: any, index: number) => (
     <div key={index}>
+      
+{
+  loanInfo?.has_upfront_interest ? (
+    <>
+      {/* Always show Upfront Payment */}
+      <p className="text-[#282828] flex justify-between items-center mx-6 mb-2 font-semibold text-[16px]">
+        <span>Upfront Payment</span>
+        <span className="font-medium text-[15px]">
+          {formatCurrency(loanInfo?.interest_amount)}
+        </span>
+      </p>
+
+      {/* Show Partial Payment + Balance only if another payment (besides upfront) has been made */}
+      {loanInfo?.amount_remaining < loanInfo?.amount && (
+        <>
+          <p className="text-[#282828] flex justify-between items-center mx-6 mb-2 font-semibold text-[16px]">
+            <span>Partial Payment</span>
+            <span className="font-medium text-[15px]">
+              {formatCurrency(loanInfo?.amount + loanInfo?.interest_amount - loanInfo?.amount_remaining - loanInfo?.interest_amount)}
+            </span>
+          </p>
+
+          <p className="text-[#282828] flex justify-between items-center mx-6 mb-2 font-semibold text-[16px]">
+            <span>Balance to Pay</span>
+            <span className="font-medium text-[15px]">
+              {formatCurrency(loanInfo?.amount_remaining)}
+            </span>
+          </p>
+        </>
+      )}
+    </>
+  ) : (
+    <>
+      {/* No upfront interest — show normal partial + balance */}
       <p className="text-[#282828] flex justify-between items-center mx-6 mb-2 font-semibold text-[16px]">
         <span>Partial Payment</span>
         <span className="font-medium text-[15px]">
-          {formatCurrency(loan?.payment_amount - loan?.remaining_balance)}
+          {formatCurrency(loanInfo?.amount + loanInfo?.interest_amount - loanInfo?.amount_remaining)}
         </span>
       </p>
+
       <p className="text-[#282828] flex justify-between items-center mx-6 mb-2 font-semibold text-[16px]">
         <span>Balance to Pay</span>
         <span className="font-medium text-[15px]">
-          {formatCurrency(loan?.remaining_balance)}
+          {formatCurrency(loanInfo?.amount_remaining)}
         </span>
       </p>
+    </>
+  )
+}
+
     </div>
   ))}
 
@@ -330,13 +368,13 @@ const UserLoan: React.FC<UserLoanProps> = ({loanInfo,loanHistory=false}) => {
             <span className=' '>Loan Source</span>
             <span className='font-medium text-[15px]'>{loanInfo?.source}</span>
         </p>
-        {loanInfo?.has_upfront_interest && (
+        {loanInfo?.has_upfront_interest ? (
             <p className='text-[#282828] flex justify-between items-center mx-6 mb-2 font-semibold text-[16px] '>
             <span className=' '>Loan Amount </span>
             <span className='font-medium text-[15px]'>{formatCurrency(loanInfo?.amount)}</span>
         </p>
             
-          )
+          ) : null
 
         }
         <p className='text-[#282828] flex justify-between items-center mx-6 mb-2 font-semibold text-[16px] '>
@@ -357,18 +395,56 @@ const UserLoan: React.FC<UserLoanProps> = ({loanInfo,loanHistory=false}) => {
         { loanInfo?.loan_schedules?.filter((loan: any) => loan?.status === "partially_paid" && loanInfo?.status !== "OVERDUE")
   .map((loan: any, index: number) => (
     <div key={index}>
+     {
+  loanInfo?.has_upfront_interest ? (
+    <>
+      {/* Always show Upfront Payment */}
+      <p className="text-[#282828] flex justify-between items-center mx-6 mb-2 font-semibold text-[16px]">
+        <span>Upfront Payment</span>
+        <span className="font-medium text-[15px]">
+          {formatCurrency(loanInfo?.interest_amount)}
+        </span>
+      </p>
+
+      {/* Show Partial Payment + Balance only if another payment (besides upfront) has been made */}
+      {loanInfo?.amount_remaining < loanInfo?.amount && (
+        <>
+          <p className="text-[#282828] flex justify-between items-center mx-6 mb-2 font-semibold text-[16px]">
+            <span>Partial Payment</span>
+            <span className="font-medium text-[15px]">
+              {formatCurrency(loanInfo?.amount + loanInfo?.interest_amount - loanInfo?.amount_remaining - loanInfo?.interest_amount)}
+            </span>
+          </p>
+
+          <p className="text-[#282828] flex justify-between items-center mx-6 mb-2 font-semibold text-[16px]">
+            <span>Balance to Pay</span>
+            <span className="font-medium text-[15px]">
+              {formatCurrency(loanInfo?.amount_remaining)}
+            </span>
+          </p>
+        </>
+      )}
+    </>
+  ) : (
+    <>
+      {/* No upfront interest — show normal partial + balance */}
       <p className="text-[#282828] flex justify-between items-center mx-6 mb-2 font-semibold text-[16px]">
         <span>Partial Payment</span>
         <span className="font-medium text-[15px]">
-          {formatCurrency(loan?.payment_amount - loan?.remaining_balance)}
+          {formatCurrency(loanInfo?.amount + loanInfo?.interest_amount - loanInfo?.amount_remaining)}
         </span>
       </p>
+
       <p className="text-[#282828] flex justify-between items-center mx-6 mb-2 font-semibold text-[16px]">
         <span>Balance to Pay</span>
         <span className="font-medium text-[15px]">
-          {formatCurrency(loan?.remaining_balance)}
+          {formatCurrency(loanInfo?.amount_remaining)}
         </span>
       </p>
+    </>
+  )
+}
+
     </div>
   ))}
         

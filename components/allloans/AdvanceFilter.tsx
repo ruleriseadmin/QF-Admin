@@ -1,3 +1,4 @@
+'use client'
 import React, { useState } from 'react';
 import { FaTimes } from "react-icons/fa";
 import Image from 'next/image';
@@ -17,6 +18,7 @@ const AdvanceFilter: React.FC<AdvanceFilterProps> = ({ isOpen, toggleAdvanceFilt
   const [todayCreatedLoan, setTodayCreatedLoan] = useState<any>(false);
   const [todayDueLoan,setTodayDueLoan] = useState<any>(false);
   const [source, setSource] = useState('');
+  const [paymentType, setPaymentType] = useState('');
  
   const [searchDueDate, setSearchDueDate] = useState({
     startDate: '',
@@ -61,6 +63,7 @@ const AdvanceFilter: React.FC<AdvanceFilterProps> = ({ isOpen, toggleAdvanceFilt
   if (selectedLoanStatus.length > 0) {
     params.set('loanStatus', selectedLoanStatus.join(','));
   }
+  if(paymentType) params.set('paymentType', paymentType);
 
   //  Boolean filters
   if (todayCreatedLoan) params.set('createdToday', 'true');
@@ -118,10 +121,9 @@ const AdvanceFilter: React.FC<AdvanceFilterProps> = ({ isOpen, toggleAdvanceFilt
     { name: 'Overdue loans', value: 'overdue' },
     { name: 'Due Today', value: 'due_today' },
     { name: 'Applied Today', value: 'applied_today' },
+    {name:'Upfront Payment', value:'upfront'},
+    {name:'Installment Payment', value:'installment'},
   ];
-
-
-  
 
   return (
     <div
@@ -163,7 +165,9 @@ const AdvanceFilter: React.FC<AdvanceFilterProps> = ({ isOpen, toggleAdvanceFilt
   checked={
     selectedLoanStatus.includes(loanType.value) ||
     (loanType.value === 'due_today' && todayDueLoan) ||
-    (loanType.value === 'applied_today' && todayCreatedLoan)
+    (loanType.value === 'applied_today' && todayCreatedLoan) ||
+    (loanType.value === 'upfront' && paymentType === 'upfront') ||
+    (loanType.value === 'installment' && paymentType === 'installment')
   }
   onChange={(e) => {
     const isChecked = e.target.checked;
@@ -172,7 +176,12 @@ const AdvanceFilter: React.FC<AdvanceFilterProps> = ({ isOpen, toggleAdvanceFilt
       setTodayDueLoan(isChecked);
     } else if (loanType.value === 'applied_today') {
       setTodayCreatedLoan(isChecked);
-    } else {
+    } else if (loanType.value === 'upfront') {
+      setPaymentType('upfront');
+    } else if (loanType.value === 'installment') {
+      setPaymentType('installment');
+    }
+    else {
       handleLoanStatusChange(loanType.value, isChecked);
     }
   }}
