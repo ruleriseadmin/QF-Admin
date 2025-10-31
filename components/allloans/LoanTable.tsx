@@ -48,7 +48,7 @@ const LoanTable: React.FC<LoanTableProps> = ({toggleDropDown}) => {
   const due_start = searchParams.get('due_start') || '';
   const due_end = searchParams.get('due_end') || '';
   const loanStatus = searchParams.get('loanStatus') || '';
-
+const [loanTypes, setLoanTypes] = useState<string>('');
   const createdToday = searchParams.get('createdToday') || '';
 const dueToday = searchParams.get('dueToday') || '';
 const reset = searchParams.get('reset') || '';
@@ -64,6 +64,7 @@ const pushStatus = searchParams.get('pushStatus') || '';
 const pushTitle = searchParams.get('pushTitle') || '';
 const pushBody = searchParams.get('pushBody') || '';
 const send_push_notification = searchParams.get('send_push_notification') || '';
+const PaymentType = searchParams.get('paymentType') || '';
 const [sendPushNotification, setSendPushNotification] = useState(false);
 const [loanHistory, setLoanHistory] = useState<any[]>([]);
 const [success, setSuccess] = useState('');
@@ -97,6 +98,9 @@ const toggleLoanHistory = () => {
     if(send_push_notification ){
        setSendPushNotification(true)
   }
+  if(PaymentType){
+    setLoanTypes(PaymentType)
+  }
     if(reset){
       setSearchDate({
         startDate: '',
@@ -104,7 +108,7 @@ const toggleLoanHistory = () => {
       })
     }
     
-  }, [start, end, pushBody, pushTitle,  send_push_notification,  loanStatus, reset]);
+  }, [start, end, pushBody, pushTitle,  send_push_notification,PaymentType,  loanStatus, reset]);
   
 
 
@@ -191,6 +195,9 @@ const toggleLoanHistory = () => {
         }
         if(downloadExcel){
           queryObj.download_excel = 'true';
+        }
+        if(loanTypes){
+          queryObj.interest_payment_type = loanTypes;
         }
         if (searchDate.startDate && searchDate.endDate) {
           queryObj.search_date_range = `${searchDate.startDate}${' - '}${searchDate.endDate}`;
@@ -285,9 +292,10 @@ const toggleLoanHistory = () => {
     fetchLoans();
     return () => controller.abort();
 
-  }, [page, triggerSearch, sendPushNotification,refetch,  searchDate.startDate,source,downloadExcel,  searchDate.endDate, selectedSelection, itemsPerPage, selectedSort, due_start, loanCountTo,loanCountFrom, due_end, dpd, amountFrom, amountTo, createdToday, dueToday]);
+  }, [page, triggerSearch, loanTypes, sendPushNotification,refetch,  searchDate.startDate,source,downloadExcel,  searchDate.endDate, selectedSelection, itemsPerPage, selectedSort, due_start, loanCountTo,loanCountFrom, due_end, dpd, amountFrom, amountTo, createdToday, dueToday]);
   
   
+  // reset
 
   const resetQuery = () => {
     setSearchWord('');
@@ -373,13 +381,14 @@ const toggleLoanHistory = () => {
     {name: 'Processing' },
     {name:'Partially Paid'},
     {name:'Fully Paid'},
+    {name:'Upfront'},
+    {name:'Installment'},
   ];
 
 //toggle loan slide
 const toggleLoanSlide = () => {
   setOpenLoanSlide(!openLoanSlide);
 }
-
 
 
 
@@ -432,7 +441,7 @@ const toggleLoanSlide = () => {
           <button
             key={index}
             onClick={() => {
-              setSelectedSelection(select.name);
+              select.name === 'Upfront' ? setLoanTypes('upfront') : select.name === 'Installment' ? setLoanTypes('installment') : setSelectedSelection(select.name);
               setOpenSelection(false); // Close dropdown after selection
             }}
             className={`w-full text-start ml-4 text-[14px] text-[#282828] ${index === 0 ? 'mt-4' : 'mt-2'}`}
