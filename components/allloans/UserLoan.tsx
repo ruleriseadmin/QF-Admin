@@ -336,7 +336,11 @@ const UserLoan: React.FC<UserLoanProps> = ({loanInfo,loanHistory=false}) => {
       {/* Amount and Date section */}
       <div className={`${loan?.status === 'completed' ? 'text-[#5A5A5A]' : 'text-[#282828] '} font-medium text-[15px]  leading-7 flex  flex-col`}>
         <div className='flex flex-col justify-end items-end'>
-        <span className='font-medium'>{loanInfo[0]?.status === 'OVERDUE' ? formatCurrency(loan?.remaining_balance + loanInfo[0]?.penalty_remaining) : formatCurrency(loan?.payment_amount)}</span>
+        <span className='font-medium'>{
+        !loanInfo?.has_upfront_interest ?
+        loanInfo[0]?.status === 'OVERDUE' ? formatCurrency(loan?.remaining_balance + loanInfo[0]?.penalty_remaining) : formatCurrency(loan?.payment_amount) :
+        loanInfo[0]?.status === 'OVERDUE' ? formatCurrency(loan?.remaining_balance + loanInfo[0]?.penalty_remaining) : formatCurrency(loan?.principal_payment)
+        }</span>
         </div>
       </div>
     </div> ))}
