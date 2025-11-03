@@ -412,7 +412,7 @@ const toggleLoanSlide = () => {
         height={18}
       />
       <p className="lg:text-[15px] md:text-[13px] text-[13px] text-[#282828] font-medium ml-1 font-euclid">
-        Sortby : {selectedSelection || 'All'}
+        Sortby : {selectedSelection || loanTypes || 'All'}
       </p>
     </div>
     {/* Right Section */}
@@ -440,22 +440,24 @@ const toggleLoanSlide = () => {
         {selection.map((select: any, index: number) => (
           <button
             key={index}
-            onClick={() => {
-              select.name === 'Upfront' ? setLoanTypes('upfront') : select.name === 'Installment' ? setLoanTypes('installment') : setSelectedSelection(select.name);
-              setOpenSelection(false); // Close dropdown after selection
-            }}
+           onClick={() => {
+  if (select.name === 'Upfront' || select.name === 'Installment') {
+    setLoanTypes(select.name.toLowerCase()); // 'upfront' or 'installment'
+    setSelectedSelection(''); // Clear status filter
+  } else {
+    setSelectedSelection(select.name);
+    setLoanTypes(''); // Clear loanTypes filter
+  }
+  setOpenSelection(false); // Close dropdown after selection
+}}
             className={`w-full text-start ml-4 text-[14px] text-[#282828] ${index === 0 ? 'mt-4' : 'mt-2'}`}
           >
-            <div className="flex justify-start text-[#282828] items-center font-medium gap-6">
+              <div className="flex justify-start text-[#282828] items-center font-medium gap-6">
               <p>{select.name} loans</p>
-              {select.name === selectedSelection && (
-                <Image
-                  src="/images/good.png"
-                  alt="good"
-                  height={17}
-                  width={17}
-                />
-              )}
+              {(select.name === selectedSelection || select.name.toLowerCase() === loanTypes) && (
+  <Image src="/images/good.png" alt="good" height={17} width={17} />
+)}
+
             </div>
           </button>
         ))}
@@ -552,7 +554,7 @@ const toggleLoanSlide = () => {
       <div className="flex items-center justify-between w-full md:pl-6 pl-4  lg:pl-0 mb-10">
         <div className="flex items-center">
           <Image src="/images/loanuser.png" alt="Loan" width={24} height={24} />
-          <h1 className="text-[#282828] lg:text-[18px] md:text-[16px] text-[16px] font-bold">{selectedSelection} loans</h1>
+          <h1 className="text-[#282828] lg:text-[18px] md:text-[16px] text-[16px] font-bold">{selectedSelection || loanTypes} loans</h1>
         </div>
         <div className='flex items-center justify-center md:mr-4'>
         <Image src="/images/blacksms.png" alt="Filter" width={24} height={24} className={`mr-4 ${selectedRows.length ===loans?.length ? '' : 'opacity-50'}`} />
