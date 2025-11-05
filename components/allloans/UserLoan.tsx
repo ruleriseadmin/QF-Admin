@@ -292,10 +292,18 @@ const UserLoan: React.FC<UserLoanProps> = ({loanInfo,loanHistory=false}) => {
                 <span className=' '>Current Penalty</span>
                 <span className='font-medium text-[15px] '>{formatCurrency(loanInfo?.penalty_remaining)}</span>
             </p>
+             {loanInfo?.has_upfront_interest ? (
+    
             <p className='text-[#282828] flex justify-between items-center mx-6 mb-2 font-semibold text-[16px] '>
+                <span className=' '>{loanInfo.status === 'CLOSED' ? 'Total Amount Collected' : 'Amount Collected' }</span>
+                <span className='font-medium text-[15px] '>{formatCurrency(loanInfo?.amount - loanInfo?.amount_remaining)}</span>
+            </p>
+  ) : (
+     <p className='text-[#282828] flex justify-between items-center mx-6 mb-2 font-semibold text-[16px] '>
                 <span className=' '>{loanInfo.status === 'CLOSED' ? 'Total Amount Collected' : 'Amount Collected' }</span>
                 <span className='font-medium text-[15px] '>{formatCurrency(loanInfo?.total_payable - loanInfo?.amount_remaining)}</span>
             </p>
+  )}
 
             </>
         )}
@@ -478,10 +486,18 @@ const UserLoan: React.FC<UserLoanProps> = ({loanInfo,loanHistory=false}) => {
                 <span className=' '>Current Penalty</span>
                 <span className='font-medium text-[15px] '>{formatCurrency(loanInfo?.penalty_remaining)}</span>
             </p>
+            {loanInfo?.has_upfront_interest ? (
+    
             <p className='text-[#282828] flex justify-between items-center mx-6 mb-2 font-semibold text-[16px] '>
+                <span className=' '>{loanInfo.status === 'CLOSED' ? 'Total Amount Collected' : 'Amount Collected' }</span>
+                <span className='font-medium text-[15px] '>{formatCurrency(loanInfo?.amount - loanInfo?.amount_remaining)}</span>
+            </p>
+  ) : (
+     <p className='text-[#282828] flex justify-between items-center mx-6 mb-2 font-semibold text-[16px] '>
                 <span className=' '>{loanInfo.status === 'CLOSED' ? 'Total Amount Collected' : 'Amount Collected' }</span>
                 <span className='font-medium text-[15px] '>{formatCurrency(loanInfo?.total_payable - loanInfo?.amount_remaining)}</span>
             </p>
+  )}
 
             </>
         )}
