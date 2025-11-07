@@ -205,7 +205,7 @@ const UserLoan: React.FC<UserLoanProps> = ({loanInfo,loanHistory=false}) => {
         </p>) : (
            <p className='text-[#282828] flex justify-between items-center mx-6 mb-2 font-semibold text-[16px] '>
         <span className=' '>{loanInfo?.status === 'OPEN' ? 'Amount Due' : 'Original Amount Due'}</span>
-            <span className='font-medium text-[15px]'>{formatCurrency(loanInfo?.total_payable - loanInfo.penalty)}</span>
+            <span className='font-medium text-[15px]'>{formatCurrency(Number(loanInfo?.total_payable - loanInfo.penalty.toFixed(2)))}</span>
         </p> 
          )}
         { loanInfo?.loan_schedules?.filter((loan: any) => loan?.status === "partially_paid" && loanInfo?.status !== "OVERDUE")
@@ -229,7 +229,7 @@ const UserLoan: React.FC<UserLoanProps> = ({loanInfo,loanHistory=false}) => {
           <p className="text-[#282828] flex justify-between items-center mx-6 mb-2 font-semibold text-[16px]">
             <span>Partial Payment</span>
             <span className="font-medium text-[15px]">
-              {formatCurrency(loanInfo?.amount + loanInfo?.interest_amount - loanInfo?.amount_remaining - loanInfo?.interest_amount)}
+              {formatCurrency(Number((loanInfo?.amount + loanInfo?.interest_amount - loanInfo?.amount_remaining - loanInfo?.interest_amount).toFixed(2)))}
             </span>
           </p>
 
@@ -248,7 +248,7 @@ const UserLoan: React.FC<UserLoanProps> = ({loanInfo,loanHistory=false}) => {
       <p className="text-[#282828] flex justify-between items-center mx-6 mb-2 font-semibold text-[16px]">
         <span>Partial Payment</span>
         <span className="font-medium text-[15px]">
-          {formatCurrency(loanInfo?.amount + loanInfo?.interest_amount - loanInfo?.amount_remaining)}
+          {formatCurrency(Number((loanInfo?.amount + loanInfo?.interest_amount - loanInfo?.amount_remaining).toFixed(2)))}
         </span>
       </p>
 
@@ -296,12 +296,15 @@ const UserLoan: React.FC<UserLoanProps> = ({loanInfo,loanHistory=false}) => {
     
             <p className='text-[#282828] flex justify-between items-center mx-6 mb-2 font-semibold text-[16px] '>
                 <span className=' '>{loanInfo.status === 'CLOSED' ? 'Total Amount Collected' : 'Amount Collected' }</span>
-                <span className='font-medium text-[15px] '>{formatCurrency(loanInfo?.amount - loanInfo?.amount_remaining)}</span>
+                <span className='font-medium text-[15px] '>{formatCurrency(Number((loanInfo?.amount - loanInfo?.amount_remaining).toFixed(2)))}</span>
             </p>
   ) : (
      <p className='text-[#282828] flex justify-between items-center mx-6 mb-2 font-semibold text-[16px] '>
                 <span className=' '>{loanInfo.status === 'CLOSED' ? 'Total Amount Collected' : 'Amount Collected' }</span>
-                <span className='font-medium text-[15px] '>{formatCurrency(loanInfo?.total_payable - loanInfo?.amount_remaining)}</span>
+           <span className='font-medium text-[15px]'>
+  {formatCurrency(Number((loanInfo?.total_payable - loanInfo?.amount_remaining).toFixed(2)))}
+</span>
+
             </p>
   )}
 
@@ -399,7 +402,7 @@ const UserLoan: React.FC<UserLoanProps> = ({loanInfo,loanHistory=false}) => {
         </p>) : (
            <p className='text-[#282828] flex justify-between items-center mx-6 mb-2 font-semibold text-[16px] '>
         <span className=' '>{loanInfo?.status === 'OPEN' ? 'Amount Due' : 'Original Amount Due'}</span>
-            <span className='font-medium text-[15px]'>{formatCurrency(loanInfo?.total_payable - loanInfo.penalty)}</span>
+            <span className='font-medium text-[15px]'>{formatCurrency(Number((loanInfo?.total_payable - loanInfo.penalty).toFixed(2)))}</span>
         </p> 
          )}
        
@@ -424,7 +427,7 @@ const UserLoan: React.FC<UserLoanProps> = ({loanInfo,loanHistory=false}) => {
           <p className="text-[#282828] flex justify-between items-center mx-6 mb-2 font-semibold text-[16px]">
             <span>Partial Payment</span>
             <span className="font-medium text-[15px]">
-              {formatCurrency(loanInfo?.amount + loanInfo?.interest_amount - loanInfo?.amount_remaining - loanInfo?.interest_amount)}
+              {formatCurrency(Number((loanInfo?.amount + loanInfo?.interest_amount - loanInfo?.amount_remaining - loanInfo?.interest_amount).toFixed(2)))}
             </span>
           </p>
 
@@ -443,7 +446,7 @@ const UserLoan: React.FC<UserLoanProps> = ({loanInfo,loanHistory=false}) => {
       <p className="text-[#282828] flex justify-between items-center mx-6 mb-2 font-semibold text-[16px]">
         <span>Partial Payment</span>
         <span className="font-medium text-[15px]">
-          {formatCurrency(loanInfo?.amount + loanInfo?.interest_amount - loanInfo?.amount_remaining)}
+          {formatCurrency(Number((loanInfo?.amount + loanInfo?.interest_amount - loanInfo?.amount_remaining).toFixed(2)))}
         </span>
       </p>
 
@@ -490,12 +493,13 @@ const UserLoan: React.FC<UserLoanProps> = ({loanInfo,loanHistory=false}) => {
     
             <p className='text-[#282828] flex justify-between items-center mx-6 mb-2 font-semibold text-[16px] '>
                 <span className=' '>{loanInfo.status === 'CLOSED' ? 'Total Amount Collected' : 'Amount Collected' }</span>
-                <span className='font-medium text-[15px] '>{formatCurrency(loanInfo?.amount - loanInfo?.amount_remaining)}</span>
+                <span className='font-medium text-[15px] '>{formatCurrency(Number((loanInfo?.amount - loanInfo?.amount_remaining).toFixed(2)))}</span>
             </p>
   ) : (
      <p className='text-[#282828] flex justify-between items-center mx-6 mb-2 font-semibold text-[16px] '>
                 <span className=' '>{loanInfo.status === 'CLOSED' ? 'Total Amount Collected' : 'Amount Collected' }</span>
-                <span className='font-medium text-[15px] '>{formatCurrency(loanInfo?.total_payable - loanInfo?.amount_remaining)}</span>
+                <span className='font-medium text-[15px] '>{formatCurrency(Number((loanInfo?.total_payable - loanInfo?.amount_remaining).toFixed(2)))}
+</span>
             </p>
   )}
 
