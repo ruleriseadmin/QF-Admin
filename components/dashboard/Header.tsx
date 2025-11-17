@@ -13,7 +13,7 @@ import SlideActivity from '../activity/SlideActivity';
 import { subDays } from 'date-fns';
 import { Calendar } from "@/components/ui/calendar";
 import { DateRange } from "react-day-picker";
-import BvnMismatchModal from './BvnMismatchModal';
+
 
 
 
@@ -26,19 +26,12 @@ const Header = () => {
     const router = useRouter();
     const [disburse,setDisburse] = useState('');
     const [openActivity, setOpenActivty] = useState(false)
-    const [openMismatch, setOpenMismatch] = useState(false)
-    const [bvnExiting, setBvnExiting] = useState(false)
     const [isExiting, setIsExiting] = useState(false)
     const profile: any = JSON.parse(localStorage.getItem('profile') || '{}');
     const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [startDate, setStartDate] = useState<any>();
   const [endDate, setEndDate] = useState<any>();
-  const [bvnMisMatches, setBvnMisMatches] = useState<any>({});
-  const [isMismatch, setIsMismatch] = useState(false);
-  const [page, setPage] = useState(1);
-  const [itemsPerPage] = useState(10);
-  const [totalItems, setTotalItems] = useState(0);
-  const [lastPage, setLastPage] = useState(0);
+  const [unResolvedCount, setUnResolvedCount] = useState(0);
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: subDays(new Date(), 29),
     to: new Date(),
@@ -79,29 +72,16 @@ const Header = () => {
   }
 };
 
-// Handle page change
-  const handlePageChange = (page: number) => {
-    setPage(page);
-  };
 
  useEffect(() => {
     const fetchBvnMisMatch = async () => {
        const controller = new AbortController();
-        const queryObj: Record<string, string> = { 
-          page: String(page), 
-          per_page: String(itemsPerPage),
-         
-        };
-        const queryString = new URLSearchParams(queryObj).toString();
+    
       try {
         setLoading(true);
-        const response = await apiClient.get(`/customer/verification_mismatches?${queryString}`);
-        setBvnMisMatches(response?.data?.data|| '');
-        setTotalItems(response?.data?.data?.total_items || 0);
-        setLastPage(response?.data?.data?.last_page || 0);
-        if(response?.data?.data?.mismatches.length > 0){
-          setIsMismatch(true)
-        }
+        const response = await apiClient.get(`/customer/verification_mismatches`);
+        setUnResolvedCount(response?.data?.data?.unresolvedCount);
+        
   
       } catch (error) {
         console.error('Error fetching bvn mismatch status:', error);
@@ -111,7 +91,7 @@ const Header = () => {
     };
   
     fetchBvnMisMatch();
-  }, [page]);
+  }, []);
 
 
 //always send the date range to the URL
@@ -169,17 +149,7 @@ const resetDateRange = () => {
         }
       };
 
-     const toggleMismatch = () => {
-        if (openMismatch) {
-          setBvnExiting(true);
-          setTimeout(() => {
-            setOpenMismatch(false);
-            setBvnExiting(false);
-          }, 300); // Match animation duration
-        } else {
-          setOpenMismatch(true);
-        }
-      };
+    
     
 
     // Toggle contact form
@@ -320,15 +290,15 @@ onClick={resetDateRange}
   {/* Left Section */}
   
     <div 
-  onClick={() => setOpenMismatch(true)}
+
   className=" items-center cursor-pointer text-nowrap lg:w-7/12 md:w-[115px] lg:flex md:hidden hidden">
     <Image
-      src={`${isMismatch ? '/images/misMatch.png' : '/images/noMisMatch.png'}`}
+      src={`${unResolvedCount > 0 ? '/images/misMatch.png' : '/images/noMisMatch.png'}`}
       alt="Logo"
       width={20}
       height={20}
     />
-    <p className={`lg:ml-2 lg:text-[15px] font-semibold md:text-[14px] ${isMismatch ? 'text-[#C73802]' : 'text-[#828282]'}`}>{`You have (${totalItems}) mismatch case${bvnMisMatches?.mismatches?.length > 1 ? 's' : ''}`}</p>
+    <p className={`lg:ml-2 lg:text-[15px] font-semibold md:text-[14px] ${unResolvedCount > 0 ? 'text-[#C73802]' : 'text-[#828282]'}`}>{`You have (${unResolvedCount}) mismatch case${unResolvedCount > 1 ? 's' : ''}`}</p>
 
   </div>
   
@@ -461,21 +431,7 @@ onClick={handleLogout}
     />
   )
 }
-{  openMismatch && (
-    <BvnMismatchModal 
-    isOpen={!bvnExiting}
-    toggleMismatch={toggleMismatch}
-    isExiting={bvnExiting}
-    bvnArray={bvnMisMatches}
-    lastPage={lastPage}
-    page={page}
-    handlePageChange={handlePageChange}
-    itemsPerPage={itemsPerPage}
-    totalItems={totalItems || 0}
-    loading={loading}
-    />
-  )
-}
+
 
 
         </div>

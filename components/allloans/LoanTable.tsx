@@ -362,7 +362,7 @@ const toggleLoanHistory = () => {
     {name: 'LOAN TENURE', cell: (row: any) => row?.interest?.period    },
     { name: 'LOAN AMT.', cell: (row: any) => `${formatCurrency(row?.amount)}` },
     { name: 'DUE AMT.', cell: (row: any) => `${formatCurrency(row?.amount_remaining)}` },
-    { name: 'DPD', selector: (row: any) => row.expiry_date },
+    { name: 'DPD', selector: 'dpd' },
     { name: 'ACTIONS', selector: (row: any) => row.actions },
   ];
 
@@ -389,7 +389,6 @@ const toggleLoanHistory = () => {
 const toggleLoanSlide = () => {
   setOpenLoanSlide(!openLoanSlide);
 }
-
 
 
   return (
@@ -440,7 +439,7 @@ const toggleLoanSlide = () => {
         {selection.map((select: any, index: number) => (
           <button
             key={index}
-           onClick={() => {
+            onClick={() => {
   if (select.name === 'Upfront' || select.name === 'Installment') {
     setLoanTypes(select.name.toLowerCase()); // 'upfront' or 'installment'
     setSelectedSelection(''); // Clear status filter
@@ -452,7 +451,7 @@ const toggleLoanSlide = () => {
 }}
             className={`w-full text-start ml-4 text-[14px] text-[#282828] ${index === 0 ? 'mt-4' : 'mt-2'}`}
           >
-              <div className="flex justify-start text-[#282828] items-center font-medium gap-6">
+            <div className="flex justify-start text-[#282828] items-center font-medium gap-6">
               <p>{select.name} loans</p>
               {(select.name === selectedSelection || select.name.toLowerCase() === loanTypes) && (
   <Image src="/images/good.png" alt="good" height={17} width={17} />
@@ -588,30 +587,32 @@ const toggleLoanSlide = () => {
                   {columns.map((col, index) => (
                     <td key={index} className="px-3 pt-7  pb-4 border-b font-montserrat border-[#E6E6E6]">
                       {col.name === 'STATUS' && row.status === 'OPEN' ? (
-                        <span className="bg-[#5E8D35] rounded-full text-[#FFFFFF] px-3 py-1 inline-block">
+                       
+                           <span className={`bg-[#5E8D35] rounded-full text-[#FFFFFF] ${row?.has_upfront_interest ? 'pl-3 pr-3 flex gap-1' : 'px-3'}  py-1 `}> 
+                           {row?.has_upfront_interest ? <Image src="/images/upfront.png" alt="Loan" width={20} height={12} /> : null}
                           {row.status}
                         </span>
                       ): col.name === 'STATUS' && row.status === 'FAILED' ? (
-                        <span className="bg-[#9D8814] rounded-full text-[#FFFFFF] px-3 py-1 inline-block">
+                           <span className={`bg-[#9D8814] rounded-full text-[#FFFFFF] ${row?.has_upfront_interest ? 'pl-3 pr-6 flex gap-1' : 'px-5'}  py-1 `}> 
+                           {row?.has_upfront_interest ? <Image src="/images/upfront.png" alt="Loan" width={20} height={12} /> : null}
                           {row.status}
                         </span>
                       ) :  col.name === 'STATUS' && row.status === 'CLOSED' ? (
-                        <span className="bg-[#2290DF] rounded-full text-[#FFFFFF] px-3 py-1 inline-block">
+                          <span className={`bg-[#2290DF] rounded-full text-[#FFFFFF] ${row?.has_upfront_interest ? 'pl-3 pr-6 flex gap-1' : 'px-3'}  py-1 `}> 
+                          {row?.has_upfront_interest ? <Image src="/images/upfront.png" alt="Loan" width={20} height={12} /> : null}
                           {row.status}
                         </span>
                       ) :  col.name === 'STATUS' && row.status === 'OVERDUE' ? (
-                        <span className="bg-[#DA3737] rounded-full text-[#FFFFFF] px-3 py-1 inline-block">
+                        <span className={`bg-[#DA3737] rounded-full text-[#FFFFFF] ${row?.has_upfront_interest ? 'pl-3 pr-6 flex gap-1' : 'px-5'}  py-1 `}>
+                           {row?.has_upfront_interest ? <Image src="/images/upfront.png" alt="Loan" width={20} height={12} /> : null}
                           {row.status}
                         </span>
                       ):  col.name === 'STATUS' && row.status === 'PROCESSING' ? (
-                        <span className="bg-[#9D8814] rounded-full text-[#FFFFFF] px-3 py-1 inline-block">
+                        <span className={`bg-[#9D8814] rounded-full text-[#FFFFFF] ${row?.has_upfront_interest ? 'pl-3 pr-6 flex gap-1' : 'px-5'}  py-1 `}> 
+                           {row?.has_upfront_interest ? <Image src="/images/upfront.png" alt="Loan" width={20} height={12} /> : null}
                           {row.status}
                         </span>
-                        ): col.name === 'DPD' ? (
-                        <span className=" rounded-full  px-3 py-1 inline-block">
-                          {calculateClosedDaysBetween(row?.expiry_date,row?.updated_at?.split(' ')[0])} 
-                        </span>
-                      ): col.name === 'ACTIONS' ? (
+                        ): col.name === 'ACTIONS' ? (
                         <div className="flex justify-between items-center w-full gap-1">
                           <button
                           onClick={() => {

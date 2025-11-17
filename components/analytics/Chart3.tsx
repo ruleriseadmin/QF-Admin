@@ -116,7 +116,7 @@ const Chart3 = () => {
   const totalCRC = yes + no + noData;
   const filterData = 
      [
-      { name: 'Gross Revenue', number1: chartData?.customers_report?.gross_revenue?.count, amount: chartData?.customers_report?.gross_revenue?.total_amount },
+      { name: 'Principal Disbursed(Gross)', number1: chartData?.customers_report?.total_principal_disbursed_gross?.count, amount: chartData?.customers_report?.total_principal_disbursed_gross?.total_amount },
       { name: 'Fully Collected (INT + PEN)', number2: chartData?.customers_report?.fully_collected?.count, amount: chartData?.customers_report?.fully_collected?.total_amount  },
       { name: 'Total overdue loans', number4: chartData?.overdue_loans?.count, amount: chartData?.overdue_loans?.total_unpaid_amount },
       { name: 'Credit bureau check', crc:totalCRC },
