@@ -30,11 +30,12 @@ const MismatchHero = () => {
 
   const total = misMatchData?.total_items || 0;
   const unresolved = misMatchData?.unresolvedCount || 0;
+  const passed = misMatchData?.passedCount || 0;
 
   const displayData = [
     { key: cust[0], value: total, color: colors[0] },
     { key: cust[1], value: unresolved, color: colors[1] },
-    { key: cust[2], value: total - unresolved, color: colors[2] },
+    { key: cust[2], value: passed, color: colors[2] },
   ];
 
   return (
