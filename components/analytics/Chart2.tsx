@@ -47,7 +47,7 @@ const [resetDate, setResetDate] = useState(false)
     return `${year}-${month}-${day}`;
   }
 
-
+//fetch data
   useEffect(() => {
     const controller = new AbortController();
     const fetchData = async () => {
@@ -414,7 +414,7 @@ const pieData = names.map((item, index) => ({
           {/* Amount Section */}
           <div className="flex items-center gap-1 font-semibold text-[16px]">
             <span className="w-[12px] h-[12px] rounded-[2px]" style={{ backgroundColor: item.color }}></span>
-            <span>{formatCurrency(item.value)}</span>
+           <span>{Number(item.value).toFixed(2)}</span>
           </div>
           {/* Users Section */}
           <div className="flex items-center gap-1 font-semibold text-[16px]">

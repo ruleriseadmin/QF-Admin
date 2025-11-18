@@ -58,12 +58,17 @@ const UserLoan: React.FC<UserLoanProps> = ({loanInfo,loanHistory=false}) => {
         } `}>
             <span className=''>ID {loanInfo?.id}</span>
             <div className='flex justify-center items-center relative'>
+              <>
+              {loanInfo?.has_upfront_interest ? (
+                <Image src="/images/upfront.png" alt="Loan" width={18} height={18} className='mr-1' />
+              ) : null }
               <span className=''>{loanInfo?.status}</span>
             {loanInfo?.status === 'PROCESSING' && (
                <IoIosArrowDropdownCircle 
                onClick={toggleProcessingModal}
                className='inline text-blue-700 text-lg cursor-pointer lg:text-xl md:text-2xl ml-1'/>
             )}
+            </>
             </div>
            
         </p>
@@ -296,7 +301,7 @@ const UserLoan: React.FC<UserLoanProps> = ({loanInfo,loanHistory=false}) => {
     
             <p className='text-[#282828] flex justify-between items-center mx-6 mb-2 font-semibold text-[16px] '>
                 <span className=' '>{loanInfo.status === 'CLOSED' ? 'Total Amount Collected' : 'Amount Collected' }</span>
-                <span className='font-medium text-[15px] '>{formatCurrency(Number((loanInfo?.amount - loanInfo?.amount_remaining).toFixed(2)))}</span>
+                <span className='font-medium text-[15px] '>{formatCurrency(Number((loanInfo?.amount + loanInfo?.penalty - loanInfo?.amount_remaining  ).toFixed(2)))}</span>
             </p>
   ) : (
      <p className='text-[#282828] flex justify-between items-center mx-6 mb-2 font-semibold text-[16px] '>
@@ -372,8 +377,15 @@ const UserLoan: React.FC<UserLoanProps> = ({loanInfo,loanHistory=false}) => {
         <p className={`flex justify-between items-center pt-6 mx-6 mb-4 font-semibold text-[16px] ${loanInfo?.status === 'OPEN' ? 'text-[#5E8D35]'
             : loanInfo?.status === 'CLOSED' ? 'text-[#2290DF]' : loanInfo?.status === 'FAILED' ? 'text-[#9D8814]' : 'text-[#DA3737]'
         } `}>
-            <span className=''>ID {loanInfo?.id}</span>
+            <span className=''>ID {loanInfo?.id} </span>
+             <div className='flex justify-center items-center relative'>
+              <>
+              {loanInfo?.has_upfront_interest ? (
+                <Image src="/images/upfront.png" alt="Loan" width={18} height={18} className='mr-1' />
+              ) : null}
             <span className=''>{loanInfo?.status}</span>
+            </>
+            </div>
         </p>
         <p className='text-[#282828] flex justify-between items-center mx-6 mb-2 font-semibold text-[16px] '>
             <span className=' '>Loan Tenure</span>
@@ -398,11 +410,11 @@ const UserLoan: React.FC<UserLoanProps> = ({loanInfo,loanHistory=false}) => {
         </p>
          {loanInfo?.has_upfront_interest ? ( <p className='text-[#282828] flex justify-between items-center mx-6 mb-2 font-semibold text-[16px] '>
         <span className=' '>{loanInfo?.status === 'OPEN' ? 'Amount Due' : 'Original Amount Due'}</span>
-            <span className='font-medium text-[15px]'>{formatCurrency(loanInfo?.disbursed_amount)}</span>
+            <span className='font-medium text-[15px]'>{formatCurrency(loanInfo?.amount)}</span>
         </p>) : (
            <p className='text-[#282828] flex justify-between items-center mx-6 mb-2 font-semibold text-[16px] '>
         <span className=' '>{loanInfo?.status === 'OPEN' ? 'Amount Due' : 'Original Amount Due'}</span>
-            <span className='font-medium text-[15px]'>{formatCurrency(Number((loanInfo?.total_payable - loanInfo.penalty).toFixed(2)))}</span>
+            <span className='font-medium text-[15px]'>{formatCurrency(Number(loanInfo?.total_payable - loanInfo.penalty.toFixed(2)))}</span>
         </p> 
          )}
        

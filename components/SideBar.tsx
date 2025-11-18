@@ -271,6 +271,18 @@ const SideBar = () => {
       >
         Blacklisted
       </button>
+      <button 
+        onClick={(e) => {
+          e.stopPropagation();
+          router.push(`/mismatch`);
+          setShowCustomerDropdown(false);
+        }}
+        className={`text-[#EEEEEE] hover:font-bold text-[14px] text-start mt-2 ${
+         path === 'mismatch' ? 'font-bold' : ''
+        }`}
+      >
+        Bvn Mismatch
+      </button>
     </div>
   )}
 </div>

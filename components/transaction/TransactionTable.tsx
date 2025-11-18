@@ -19,7 +19,7 @@ import { formatDate,saveToExcel,formatTime } from '@/utils/loan';
 
 const TransactionTable = () => {
   const [page, setPage] = useState(1);
-  const itemsPerPage = 15; // Items per page
+  const itemsPerPage = 50; // Items per page
   const router = useRouter();
   const [selectedRows, setSelectedRows] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -56,7 +56,8 @@ const pushStatus = searchParams.get('pushStatus') || '';
   const pushTitle = searchParams.get('pushTitle') || '';
   const pushBody = searchParams.get('pushBody') || '';
   const send_push_notification = searchParams.get('send_push_notification') || '';
-  
+  const upfrontPaymentParams = searchParams.get('upfrontPayment') || '';
+  const [upfrontPayment, setUpfrontPayment] = useState(false);
   const [sendPushNotification, setSendPushNotification] = useState(false);
   const [success, setSuccess] = useState('');
   const [openPushNotification, setOpenPushNotification] = useState(false);
@@ -148,6 +149,9 @@ useEffect(() => {
         if (selectedSelection && selectedSelection !== 'All') {
           queryObj.payment_type = selectedSelection;
         }
+        if(upfrontPayment){
+          queryObj.upfront_interest_transactions = 'true'
+        }
         if(status){
           queryObj.status = status;
         }
@@ -190,7 +194,7 @@ useEffect(() => {
         }if(sendPushNotification){
              setSuccess(response?.data?.message || 'Notification sent successfully');
               setNotificationOpen(true);
-             resetQuery();
+              resetQuery();
               
               return;
           }
@@ -216,8 +220,8 @@ useEffect(() => {
       };
 
     fetchTransactions();
-     return () => controller.abort();
-  }, [page, triggerSearch,paginate, searchDate,sendPushNotification, selectedSelection, selectedSort, id, downloadExcel, amountFrom, amountTo, status]);
+    return () => controller.abort();
+  }, [page, triggerSearch,paginate,upfrontPayment, searchDate,sendPushNotification, selectedSelection, selectedSort, id, downloadExcel, amountFrom, amountTo, status]);
 
 
   
@@ -252,7 +256,7 @@ useEffect(() => {
     },
     { name: 'FULL NAME', cell: (row: any) => `${row?.profile?.first_name} ${row?.profile?.last_name}`},
     { name: 'PHONE NO', cell: (row: any) => row?.profile?.phone_number  },
-    { name: 'AMOUNT', selector: 'amount' },
+    { name: 'AMOUNT', cell: (row: any) => row?.transaction_type === 'loan' ? row?.disbursed_amount : row?.amount },
     { name: 'TYPE', selector: 'type' },
     { name: 'STATUS', selector: 'status' },
     {name: 'DATE CREATED', cell: (row: any) => `${formatDate(row?.transaction_date?.split(' ')[0])} ${formatTime(row?.transaction_date?.split(' ')[1])}` },
@@ -274,6 +278,7 @@ useEffect(() => {
     {name: 'Card Tokenization', value:'card_tokenization'},
     {name: 'Unapplied Payment', value:'unapplied_payment'},
     {name: 'unapplied Payment(Card)', value:'unapplied_card_tokenization'},
+    {name: 'Upfront Payment', value:'upfront_payment'},
   ];
 
   const resetQuery = () => {
@@ -281,6 +286,7 @@ useEffect(() => {
     setSearchDate({ startDate: '', endDate: '' });
     setSelectedSelection('All');
     setSelectedSort('new');
+    setUpfrontPayment(false);
     setTriggerSearch(false);
     setDownloadExcel(false);
     setSendPushNotification(false);
@@ -317,7 +323,12 @@ useEffect(() => {
                   height={18}
                 />
                 <p className="text-[15px] text-[#282828] font-medium ml-1 font-euclid">
-                Sortby: {selection.find((select) => select.value === selectedSelection)?.name || 'All'}
+                 Sort by:{' '}
+                {
+                  selection.find((select) => select.value === selectedSelection)?.name ||
+                  selection.find((select) => select.value === 'upfront_payment')?.name ||
+                  'All'
+                }
                 </p>
               </div>
               {/* Right Section */}
@@ -337,26 +348,37 @@ useEffect(() => {
                   
 
                 {/* Dropdown Content */}
-                <div className="absolute lg:top-[231px] lg:left-[276px] md:top-[232px] md:left-[240px] left-[60px] w-[315px]  min-h-[138px] h-auto pb-2 bg-white rounded-xl shadow-lg font-montserrat font-medium z-50">
+                <div className="absolute lg:top-[231px] lg:left-[276px] md:top-[232px] md:left-[240px] left-[60px] w-[315px]  min-h-[138px] pb-2 h-auto bg-white rounded-xl shadow-lg font-montserrat font-medium z-50">
                   {selection.map((select: any, index: number) => (
                     <button
                       key={index}
                       onClick={() => {
-                        setSelectedSelection(select.value);
+                       if(select.value === 'upfront_payment') {
+                          setSelectedSelection('');
+                          setUpfrontPayment(true);
+                        }
+                        
+                       else{setSelectedSelection(select.value);
+                        setUpfrontPayment(false);
+                       }
                         setOpenSelection(false); // Close dropdown after selection
                       }}
                       className={`w-full text-start ml-4 text-[14px] text-[#282828] ${index === 0 ? 'mt-4' : 'mt-2'}`}
                     >
                       <div className="flex justify-start text-[#282828] items-center font-medium gap-4 z-50">
                         <p>{select.name} Payments</p>
-                        {select.value === selectedSelection && (
-                          <Image
-                            src="/images/good.png"
-                            alt="good"
-                            height={17}
-                            width={17}
-                          />
-                        )}
+                        {(
+                      select.value === selectedSelection ||
+                      (select.value === 'upfront_payment' && upfrontPayment)
+                    ) && (
+                      <Image
+                        src="/images/good.png"
+                        alt="good"
+                        height={17}
+                        width={17}
+                      />
+                    )}
+
                       </div>
                     </button>
                   ))}
@@ -453,7 +475,13 @@ useEffect(() => {
       <div className="flex items-center justify-between md:pl-6 pl-4  lg:pl-0 mb-10">
         <div className="flex items-center">
           <Image src="/images/loanuser.png" alt="Loan" width={24} height={24} />
-          <h1 className="text-[#282828] text-[18px] font-bold">{selection.find((select) => select.value === selectedSelection)?.name} Payments</h1>
+         <h1 className="text-[#282828] text-[18px] font-bold">
+  {
+    selection.find((select) => select.value === selectedSelection)?.name ||
+    selection.find((select) => select.value === 'upfront_payment')?.name
+  } 
+</h1>
+
         </div>
         <div className='flex items-center justify-center md:mr-4'>
         <Image src="/images/blacksms.png" alt="Filter" width={24} height={24} className={`mr-4 ${selectedRows.length === transactionData.length ? '' : 'opacity-50'}`} />
@@ -488,32 +516,42 @@ useEffect(() => {
                     <td key={index} className="px-3 pt-7  pb-4 border-b font-montserrat border-[#E6E6E6]">
                       {col.name === 'STATUS'  ? (row.status.toUpperCase())
                        : col.name === 'TYPE' && row?.transaction_type === 'refund' ? (
-                        <span className="bg-[#656862] rounded-full text-[#FFFFFF] px-3 py-1 inline-block">
+                        <div className="bg-[#656862] flex gap-1 rounded-full text-[#FFFFFF] px-3 py-1 justify-center">
+                           {row?.loan?.has_upfront_interest ? <Image src="/images/upfront.png" alt="Loan" width={20} height={12} /> : null}
                          Refund
-                        </span>
+                        </div>
                       ) : col.name === 'TYPE' && row?.transaction_type === 'penalty' ? (
-                        <span className="bg-[#DA3737] rounded-full text-[#FFFFFF] px-3 py-1 inline-block">
+                        <span className="bg-[#DA3737] rounded-full text-[#FFFFFF] px-3 py-1 justify-center flex gap-1">
+                            {row?.loan?.has_upfront_interest ? <Image src="/images/upfront.png" alt="Loan" width={20} height={12} /> : null}
                           Penalty
                         </span>
                       ): col.name === 'TYPE' && row?.transaction_type === 'card_tokenization' ? (
-                        <span className="bg-[#155661] rounded-full text-[#FFFFFF] px-3 py-1 inline-block">
+                        <span className="bg-[#155661] rounded-full text-[#FFFFFF] px-3 py-1 justify-center flex gap-1">
                           Card Tokenization
                         </span>
                       ):  col.name === 'TYPE' &&  row?.transaction_type === 'loan' ? (
-                        <span className="bg-[#5E8D35] rounded-full text-[#FFFFFF] px-3 py-1 inline-block">
+                        <span className="bg-[#5E8D35] flex gap-1 rounded-full text-[#FFFFFF] justify-center px-3 py-1 ">
+                          {row?.loan?.has_upfront_interest ? <Image src="/images/upfront.png" alt="Loan" width={20} height={12} /> : null}
                           Disbursement
                         </span>
                       ) : col.name === 'AMOUNT' ? (
-                        row.amount.toString().includes('-') 
-                          ? `₦${row.amount.toString().split('-')[1]}` 
-                          : `₦${row.amount}`
-                      ) 
+  row?.transaction_type === 'loan' ? (
+    row.disbursed_amount?.toString().includes('-')
+      ? `₦${row.disbursed_amount.toString().split('-')[1]}`
+      : `₦${row.disbursed_amount}`
+  ) : (
+    row.amount?.toString().includes('-')
+      ? `₦${row.amount.toString().split('-')[1]}`
+      : `₦${row.amount}`
+  ))
                        :  col.name === 'TYPE' &&  row?.transaction_type === 'payment' ? (
-                        <span className="bg-[#3173F3] rounded-full text-[#FFFFFF] px-3 py-1 inline-block">
+                        <span className="bg-[#3173F3] rounded-full text-[#FFFFFF] px-3 py-1 flex justify-center gap-1">
+                          {row?.loan?.has_upfront_interest ? <Image src="/images/upfront.png" alt="Loan" width={20} height={12} /> : null}
                          Collection
                         </span>
                       ) :  col.name === 'TYPE' &&  row?.transaction_type === 'unapplied_payment' ? (
-                        <span className="bg-[#9D8814] rounded-full text-[#FFFFFF] px-3 py-1 inline-block">
+                        <span className="bg-[#9D8814] rounded-full text-[#FFFFFF] justify-center px-3 py-1 flex gap-1">
+                          {row?.loan?.has_upfront_interest ? <Image src="/images/upfront.png" alt="Loan" width={20} height={12} /> : null}
                          UNAPPLIED 
                         </span>
                       ): col.name === 'ACTIONS' ? (
