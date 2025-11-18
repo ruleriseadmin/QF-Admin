@@ -18,9 +18,8 @@ import { formatDate} from '@/utils/loan';
 
 
 const MismatchTable: React.FC = () => {
-const [openSelection, setOpenSelection] = useState(false);
 const router = useRouter();
-const [selectedFilter, setSelectedFilter] = useState('');
+const [refetch,setRefetch] = useState(false);
 const [error, setError] = useState('');
 const [idToChange, setIdToChange] = useState('');
 const [notificationOpen, setNotificationOpen] = useState(false);
@@ -32,7 +31,6 @@ const [loanExiting, setLoanExiting] = useState(false)
 const [downloadExcel, setDownloadExcel] = useState(false);
 const [triggerSearch, setTriggerSearch] = useState(false);
 const [bvnMisMatches, setBvnMisMatches] = useState<any>({});
-  const [isMismatch, setIsMismatch] = useState(false);
   const [success, setSuccess] = useState('');
   const [page, setPage] = useState(1);
   const [itemsPerPage] = useState(10);
@@ -51,6 +49,7 @@ const [searchDate, setSearchDate] = useState({
 const [openPassModal, setOpenPassModal] = useState(false);
 const [markAsRead, setMarkAsRead] = useState(false);
 const [resolved, setResolved] = useState(false);
+
 const toggleOpenPassModal = () => {
   setOpenPassModal(!openPassModal);
 };
@@ -115,22 +114,19 @@ useEffect(() => {
           queryObj.search_date_range = `${searchDate.startDate}${' - '}${searchDate.endDate}`;
         }
          if (selectedSort === 'old') {
-          queryObj.sort_direction = 'asc';
+          queryObj.sort_direction = 'desc';
         }
         if (selectedSort === 'new') {
-          queryObj.sort_direction = 'desc';
+          queryObj.sort_direction = 'asc';
         }
         const queryString = new URLSearchParams(queryObj).toString();
       try {
         setLoading(true);
         const response = await apiClient.get(`/customer/verification_mismatches?${queryString}`);
-        console.log(response);
         setBvnMisMatches(response?.data?.data || []);
         setTotalItems(response?.data?.data?.total_items || 0);
         setLastPage(response?.data?.data?.last_page || 0);
-        if(response?.data?.data?.mismatches.length > 0){
-          setIsMismatch(true)
-        }
+        
   
       } catch (error) {
         console.error('Error fetching bvn mismatch status:', error);
@@ -140,7 +136,7 @@ useEffect(() => {
     };
   
     fetchBvnMisMatch();
-  }, [page, itemsPerPage,triggerSearch,searchWord,downloadExcel,searchDate,selectedSort]);
+  }, [page, itemsPerPage,triggerSearch,downloadExcel,searchDate, refetch,selectedSort]);
 
 
   const fetchCustomers = async (no: string) => {
@@ -169,6 +165,38 @@ useEffect(() => {
 };
 
   const toggleNotification = () => setNotificationOpen(!notificationOpen);
+
+  const resolveOrMarkAsSeen = async () => {
+  // Decide which endpoint to call based on markAsRead
+  const url = markAsRead
+    ? `/customer/verification_mismatches/mark_as_seen`
+    : `/customer/manual-verification`;
+
+  try {
+    setLoading(true)
+    const response = await apiClient.post(url, {
+      user_id: idToChange
+    });
+    toggleOpenPassModal();
+    setSuccess(response?.data?.message || 'Success');
+    toggleNotification()
+    setRefetch && setRefetch(true);
+
+
+  } catch (error: any) {
+    console.error('Error resolving or marking as seen:', error);
+    if (error?.status === 401) {
+      setError('Unauthorized access. You do not have permission to view this resource.');
+      setNotificationOpen(true);
+    } else {
+      setError(error?.response?.data?.message || error?.message || 'An error occurred, please try again');
+      setNotificationOpen(true);
+    }
+  }finally{
+    setLoading(false)
+  }
+};
+
 
  
   const columns = [
@@ -289,13 +317,13 @@ useEffect(() => {
           {columns.map((col, index) => (
             <td
               key={index}
-              className="pl-10 pt-7 pb-4 border-b font-montserrat border-[#E6E6E6] relative text-left"
+              className={`pl-10 pt-7 pb-4 border-b ${row.resolved ? 'bg-[#F4F4F4]' : 'bg-[#FFDDCA]'} font-montserrat border-[#FFFFFF] mb-1 relative text-left`}
             >
               {col.name === 'ACTIONS' ? (
                 <div className="flex justify-start cursor-pointer items-center w-full gap-1">
                     <RiArrowDownSLine
                     onClick={() => {
-                        setIdToChange(row.id);
+                        setIdToChange(row.user_id);
                         toggleOpenPassModal();
                     }} 
                     className='text-3xl'/>
@@ -381,9 +409,9 @@ useEffect(() => {
            <label htmlFor="markAsRead" className=" text-[#5A5A5A] mb-2 font-medium">Pass user</label>
       </div>
        <button
-        
+        onClick={resolveOrMarkAsSeen}
         className="bg-[#111111]  disabled:opacity-45 w-[161px] h-[37px] mt-2 items-center rounded-[22px] text-white font-semibold flex justify-center text-[15px] "
-        disabled={!resolved && !markAsRead}
+        disabled={!resolved && !markAsRead && !idToChange && loading}
       >
         {loading ? 'Updating...' : 'Update'}
       </button>
