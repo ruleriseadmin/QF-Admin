@@ -505,7 +505,7 @@ const UserLoan: React.FC<UserLoanProps> = ({loanInfo,loanHistory=false}) => {
     
             <p className='text-[#282828] flex justify-between items-center mx-6 mb-2 font-semibold text-[16px] '>
                 <span className=' '>{loanInfo.status === 'CLOSED' ? 'Total Amount Collected' : 'Amount Collected' }</span>
-                <span className='font-medium text-[15px] '>{formatCurrency(Number((loanInfo?.amount - loanInfo?.amount_remaining).toFixed(2)))}</span>
+                <span className='font-medium text-[15px] '>{formatCurrency(Number((loanInfo?.amount + loanInfo?.penalty - loanInfo?.amount_remaining  ).toFixed(2)))}</span>
             </p>
   ) : (
      <p className='text-[#282828] flex justify-between items-center mx-6 mb-2 font-semibold text-[16px] '>

@@ -202,7 +202,7 @@ useEffect(() => {
   const columns = [
       { name: 'NAME', selector: 'name' },
       { name: 'REQUEST DATE', cell: (row: any) => `${formatDate(row?.registration_date)}` },
-      { name: 'BANK ACC NAME', selector: 'bank_name' },
+      { name: 'BANK ACC NAME', selector: 'account_name' },
        { name: 'PHONE NUMBER', selector: 'user_phone_number' },
       { name: 'BVN', selector: 'bvn' },
       { name: 'ACTIONS', selector: 'actions' },
