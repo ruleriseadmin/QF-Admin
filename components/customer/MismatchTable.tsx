@@ -114,10 +114,10 @@ useEffect(() => {
           queryObj.search_date_range = `${searchDate.startDate}${' - '}${searchDate.endDate}`;
         }
          if (selectedSort === 'old') {
-          queryObj.sort_direction = 'desc';
+          queryObj.sort_direction = 'asc';
         }
         if (selectedSort === 'new') {
-          queryObj.sort_direction = 'asc';
+          queryObj.sort_direction = 'desc';
         }
         const queryString = new URLSearchParams(queryObj).toString();
       try {
