@@ -19,10 +19,16 @@ const UserLoan: React.FC<UserLoanProps> = ({loanInfo,loanHistory=false}) => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState('');
   const [error, setError] = useState('');
+  const [openOfflinePaymentModal, setOpenOfflinePaymentModal] = useState(false);
+  const [offlineAmount, setOfflineAmount] = useState('');
   
 
   const toggleProcessingModal = () => {
     setOpenProcessingModal(!openProcessingModal);
+  }
+
+  const toggleOfflinePaymentModal = () => {
+    setOpenOfflinePaymentModal(!openOfflinePaymentModal);
   }
 
   const handleSubmit = async () => {
@@ -326,7 +332,44 @@ const UserLoan: React.FC<UserLoanProps> = ({loanInfo,loanHistory=false}) => {
         
 
         </div>
-        <p className='text-[#1922AB] text-[16px] font-bold font-montserrat ml-5 mt-6'>Loan Schedule </p>
+        <div className='flex items-center mt-6'>
+           <p className='text-[#1922AB] text-[16px] font-bold font-montserrat ml-5 '>Loan Schedule </p>
+          {(loanInfo?.status === 'OPEN' || loanInfo?.status === 'OVERDUE') && (
+               <IoIosArrowDropdownCircle 
+               onClick={toggleOfflinePaymentModal}
+               className='inline text-blue-700 text-lg cursor-pointer lg:text-xl md:text-2xl ml-1'/>
+            )}
+        </div>
+       {openOfflinePaymentModal && (
+  <>
+    {/* Background Overlay */}
+    <div
+      className="fixed inset-0 bg-black bg-opacity-50 z-30"
+      onClick={() => {
+        toggleOfflinePaymentModal();
+      }}
+    ></div>
+
+    {/* Dropdown Content */}
+    <div
+      className="absolute p-4 top-[337px] lg:left-[55px]  md:left-[232px] left-[191px] w-[337px] min-h-[289px] h-auto bg-white rounded-xl shadow-lg font-montserrat font-medium z-50"
+    >
+      <p className='font-bold font-montserrat text-[14px]'>Offline payment</p>
+      <p className='font-medium mt-2 font-montserrat text-[14px]'>This is an instruction to deduct the amount paid by customer from the total outstanding amount</p>
+      <label className="flex items-center mt-6 text-[14px] font-poppins">Amount due:<strong>{loanInfo?.amount_remaining}</strong> </label>
+        <input
+          type="text"
+          onChange={(e) => setOfflineAmount(e.target.value)}
+          placeholder='₦'
+          className="border  border-[#D0D5DD] rounded-[8px] h-[40px] py-2 pl-4 mt-2 w-full"
+        />
+        <button className='h-[41px] w-[169px] mt-6 text-[#FFFFFF] flex justify-center items-center text-[15px] font-semibold rounded-[22px] bg-[#111111]'>
+          Make Payment
+        </button>
+    </div>
+  </>
+)}
+       
 {loanInfo?.loan_schedules?.map((loan:any, index:number) => (
 <div key={index} className='grid lg:gap-3 mb-4 font-montserrat   lg:w-[487px] md:w-[487px] w-[410px] rounded-[12px] min-h-[50px] h-auto  mx-auto md:gap-2 p-4 text-[16px] grid-cols-2 align-middle '>
       <div className='w-full flex gap-3 font-semibold text-[16px]'>
