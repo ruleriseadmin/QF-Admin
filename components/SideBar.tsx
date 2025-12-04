@@ -15,6 +15,7 @@ const SideBar = () => {
   const [isExiting, setIsExiting] = useState(false)
   const [showSettingsDropdown, setShowSettingsDropdown] = useState(false)
   const [showCustomerDropdown, setShowCustomerDropdown] = useState(false)
+  const [showLoanDropdown, setShowLoanDropdown] = useState(false)
   const [showCreditBureauDropdown, setShowCreditBureauDropdown] = useState(false)
   const [displaySettings, setDisplaySettings] = useState('website-cms')
   const [disputes, setDisputes] = useState([])
@@ -157,26 +158,71 @@ const SideBar = () => {
   </div>
   <p className="text-[#EEEEEE] text-[15px] leading-none">Dashboard</p>
 </Link>
-
-<Link
-  href="/loans"
-  className={`flex items-center h-[30px] gap-2 justify-start mx-4 mb-4 ${isActive('/loans')}`}
->
 <div
-  className={`${
-    path === '/loans' ? 'bg-[#E1E3E442]' : 'bg-[#E1E3E442]'
-  } shadow-custom2 w-[30px] h-[30px] rounded-[8px] flex items-center justify-center`}
+  className={`flex flex-col mx-4 mb-4 ${ !showLoanDropdown && (isActive('/loans') || isActive('/viewOffer'))}  ${showLoanDropdown && 'bg-[#E1E3E442] rounded-[8px] '}`}
 >
-    <Image 
-      src="/images/loan.png" 
-      alt="Sidebar" 
-      width={20} 
-      height={20} 
-      className=""
-    />
+  {/* Top-level toggle row */}
+  <div
+    className={`flex  items-center h-[30px] gap-2 justify-start cursor-pointer`}
+    onClick={() => setShowLoanDropdown(prev => !prev)}
+  >
+    <div className="flex flex-col items-center gap-2">
+      <div
+        className={`${
+          path === '/loans' ||  path === '/viewOffer' ||  showLoanDropdown   ? 'bg-[#E1E3E442]' : 'bg-[#E1E3E442]'
+        } shadow-custom2 w-[30px] h-[30px] rounded-[8px] flex items-center justify-center`}
+      >
+        <Image 
+          src="/images/loan.png" 
+          alt="Sidebar" 
+          width={20} 
+          height={20} 
+        />
+      </div>
+    </div>
+
+    <p className="text-[#EEEEEE] text-[14px] leading-none text-wrap">Loans</p>
+
+    {showLoanDropdown ? (
+      <TiArrowSortedUp className="text-[#EEEEEE] text-[18px] ml-auto" />
+    ) : (
+      <TiArrowSortedDown className="text-[#EEEEEE] text-[18px] ml-auto" />
+    )}
   </div>
-  <p className="text-[#EEEEEE] text-[15px] leading-none">All Loans</p>
-</Link>
+
+  {/* Dropdown section */}
+  {showLoanDropdown && (
+    <div className="flex flex-col gap-1 font-normal pb-5 pl-10 pt-2">
+      <button 
+        onClick={(e) => {
+          e.stopPropagation();
+          router.push(`/loans`);
+          setShowLoanDropdown(false);
+        }}
+        className={`text-[#EEEEEE] text-[14px] hover:font-bold text-start ${
+          path === '/loans' ? 'font-bold' : ''
+        }`}
+      >
+        All Loans
+      </button>
+
+      <button 
+        onClick={(e) => {
+          e.stopPropagation();
+          router.push(`/viewOffer`);
+          setShowCustomerDropdown(false);
+        }}
+        className={`text-[#EEEEEE] hover:font-bold text-[14px] text-start mt-2 ${
+         path === 'viewOffer' ? 'font-bold' : ''
+        }`}
+      >
+        See Offer Cust.
+      </button>
+    </div>
+  )}
+</div>
+
+
 
 <Link
   href="/analytics"
@@ -210,7 +256,7 @@ const SideBar = () => {
     <div className="flex flex-col items-center gap-2">
       <div
         className={`${
-          path === '/customers' ||  path === '/kyc'||  showCustomerDropdown   ? 'bg-[#E1E3E442]' : 'bg-[#E1E3E442]'
+          path === '/customers' ||  path === '/kyc'|| path === '/blacklisted' || path === '/mismatch' ||  showCustomerDropdown   ? 'bg-[#E1E3E442]' : 'bg-[#E1E3E442]'
         } shadow-custom2 w-[30px] h-[30px] rounded-[8px] flex items-center justify-center`}
       >
         <Image 

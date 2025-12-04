@@ -33,7 +33,7 @@ const LoanSlide: React.FC<SideModalProps> = ({
 }) => {
   
     
-  
+
 const [openKyC, setOpenKyC] = useState(false);
   const [selectedRows, setSelectedRows] = useState('all');
   const [loading, setLoading] = useState(false);
@@ -49,7 +49,6 @@ const [openKyC, setOpenKyC] = useState(false);
   
   
   const [openBankModal,setOpenBankModal] = useState(false);
-
   //toggle bank modal
   const toggleBankModal = () => {
     setOpenBankModal(!openBankModal);
@@ -170,9 +169,9 @@ const toggleLoanHistory = () => {
         {toggleType === 'loan' && (
             <>
             <div className='ml-4'>
-            <p className='text-[18px] font-bold text-[#282828] my-2'>{window.location.pathname === '/customers' || window.location.pathname === '/blacklisted' || bvnSlide || window.location.pathname === '/kyc' ? 'Loan History' : 'Loan Details'}</p>
+            <p className='text-[18px] font-bold text-[#282828] my-2'>{window.location.pathname === '/customers' || window.location.pathname === '/blacklisted' || bvnSlide || window.location.pathname === '/kyc' || window.location.pathname === '/viewOffer' ? 'Loan History' : 'Loan Details'}</p>
             <p className='text-[16px] font-medium text-[#282828] my-2'>{`${user.profile?.first_name} ${user.profile?.last_name}`}, {user.phone_number || user.profile?.phone_number}</p>
-            {window.location.pathname === '/customers' || window.location.pathname === '/blacklisted' ? (
+            {window.location.pathname === '/customers' || window.location.pathname === '/viewOffer' || window.location.pathname === '/blacklisted' ? (
                <div className='flex justify-start gap-8 my-6 items-center '>
                <button
              onClick={() => setSelectedRows('all')}
@@ -230,7 +229,7 @@ const toggleLoanHistory = () => {
                 >
                     KYC
                 </button>
-                {(window.location.pathname === '/loans' || (window.location.pathname === '/dashboard' && !bvnSlide))&& (
+                {(window.location.pathname === '/loans'  || (window.location.pathname === '/dashboard' && !bvnSlide))&& (
                   <button
                   onClick={toggleLoanHistory}
                   className='bg-[#1922AB] font-semibold text-[15px] px-4 py-2 w-[129px] h-[40px] text-[#FFFFFF] rounded-[22px] '
@@ -299,14 +298,14 @@ const toggleLoanHistory = () => {
     </div>
 
     {/* Scrollable Loan Cards Section */}
-    <div className={`relative ${toggleType === 'loan' && (window.location.pathname === '/customers' || window.location.pathname === '/kyc' || window.location.pathname === '/blacklisted') ? 'mt-[170px] overflow-y-auto pb-10' : toggleType === 'loan' && window.location.pathname === '/loans' ? 'mt-[150px] overflow-y-auto pb-10' : 'mt-[120px] overflow-auto'} z-0 h-[calc(100vh-170px)]`}>
+    <div className={`relative ${toggleType === 'loan' && (window.location.pathname === '/customers' || window.location.pathname === '/kyc' || window.location.pathname === '/viewOffer' || window.location.pathname === '/blacklisted') ? 'mt-[170px] overflow-y-auto pb-10' : toggleType === 'loan' && window.location.pathname === '/loans' ? 'mt-[150px] overflow-y-auto pb-10' : 'mt-[120px] overflow-auto'} z-0 h-[calc(100vh-170px)]`}>
   {toggleType === 'loan' ? (
-    window.location.pathname === '/customers' ||  window.location.pathname === '/kyc' || window.location.pathname === '/blacklisted' ? (
+    window.location.pathname === '/customers' || window.location.pathname === '/viewOffer' ||  window.location.pathname === '/kyc' || window.location.pathname === '/blacklisted' ? (
       dataToDisplay?.map((loan: any, index: number) => (
-        <UserLoan key={index} loanInfo={loan}  />
+        <UserLoan key={index} loanInfo={loan} toggleLoanSlide={toggleLoanSlide}  />
       ))
     ) : (
-      <UserLoan loanInfo={user} />
+       <UserLoan loanInfo={user} toggleLoanSlide={toggleLoanSlide}/>
     )
   ) : (
     <UserInfo info={user} setRefetch={setRefetch} bvnSlide={bvnSlide} />

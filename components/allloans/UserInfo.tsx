@@ -5,6 +5,7 @@ import { formatDate } from '@/utils/loan';
 import {LuRefreshCw} from 'react-icons/lu';
 import LoadingPage from '@/app/loading';
 import Notification from '@/components/Notification';
+import { usePathname } from 'next/navigation';
 
 
 type UserInfoProps = {
@@ -22,13 +23,14 @@ const UserInfo:React.FC<UserInfoProps> = ({info,setRefetch,bvnSlide}) => {
     const [notificationOpen, setNotificationOpen] = useState(false);
     const toggleNotification = () => setNotificationOpen(!notificationOpen);
     const [success,setSuccess] = useState('');
+    const pathname = usePathname();
    
 
 
     // Function to fetch images
     const fetchImageData = async () => {
         try {
-            const response = await apiClient.get(`/customer/verification_images/${window.location.pathname === '/customers' || window.location.pathname === '/kyc' || window.location.pathname === '/blacklisted' || bvnSlide ? info?.id : info?.user_id}`);
+            const response = await apiClient.get(`/customer/verification_images/${pathname === '/customers' || pathname === '/kyc' || pathname === '/blacklisted' || bvnSlide ? info?.id : info?.user_id}`);
             const images = response?.data?.data || {};
 
             setImageData(images);
@@ -57,7 +59,7 @@ const UserInfo:React.FC<UserInfoProps> = ({info,setRefetch,bvnSlide}) => {
     //function to refetch bvn details
     const refetchBvnDetails = async (ignoreStored=false) => {
         try {
-            const idToUse = window.location.pathname === '/customers' || window.location.pathname === '/blacklisted' || window.location.pathname === '/kyc' || bvnSlide ? info?.id : info?.user_id
+            const idToUse = pathname === '/customers' || pathname === '/blacklisted' || pathname === '/kyc' || bvnSlide ? info?.id : info?.user_id
             const bvn = info?.bvn_details?.bvn
             if(!bvn || !idToUse) return
             setLoading(true)
