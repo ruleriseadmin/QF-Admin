@@ -5,14 +5,16 @@ import { IoIosArrowDropdownCircle } from "react-icons/io";
 import Image from 'next/image';
 import LoadingPage from '@/app/loading';
 import apiClient from '@/utils/apiClient';
+import { useRouter } from 'next/navigation';
 
 type UserLoanProps = {
     loanInfo: any; 
     loanHistory?:boolean; 
+     toggleLoanSlide?: any;
 }
 
 
-const UserLoan: React.FC<UserLoanProps> = ({loanInfo,loanHistory=false}) => {
+const UserLoan: React.FC<UserLoanProps> = ({loanInfo,loanHistory=false,toggleLoanSlide}) => {
   const [openProcessingModal, setOpenProcessingModal] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState('');
   const [confirmChangeStatus, setConfirmChangeStatus] = useState(false);
@@ -21,7 +23,7 @@ const UserLoan: React.FC<UserLoanProps> = ({loanInfo,loanHistory=false}) => {
   const [error, setError] = useState('');
   const [openOfflinePaymentModal, setOpenOfflinePaymentModal] = useState(false);
   const [offlineAmount, setOfflineAmount] = useState('');
-  
+  const router = useRouter();  
 
   const toggleProcessingModal = () => {
     setOpenProcessingModal(!openProcessingModal);
@@ -50,11 +52,44 @@ const UserLoan: React.FC<UserLoanProps> = ({loanInfo,loanHistory=false}) => {
         setLoading(false);
       }
     };
+
+    const handleOfflineSubmit = async () => {
+    // Handle the offline payment 
+      try {
+        setLoading(true);
+        const response = await apiClient.post(`/loan/offline-payment`,
+                        {
+                            loan_id: loanInfo?.id,
+                            amount: offlineAmount
+                        }
+                    );
+        setSuccess(response?.data?.message || 'Offline payment updated successfully');
+        const url = `${window.location.pathname}?status=${encodeURIComponent('success')}&title=${encodeURIComponent('success')}&subMessage=${encodeURIComponent(response?.data?.message || 'User has been blacklisted')}`;
+    router.push(url);
+   toggleLoanSlide();
+    
+
+      } catch (error: any) {
+        console.error('Error sending offline payment:', error);
+         if (error?.status === 401) {
+            setError('Unauthorized access. You do not have permission to view this resource.');
+          }else {
+          setError(  error?.response?.data?.message || error?.response?.message || 'An error occurred, please try again');
+          }
+    const url = `${window.location.pathname}?status=${encodeURIComponent('error')}&message=${encodeURIComponent(error?.response?.data?.message || error?.response?.message || 'An error occurred, please try again')}`;
+    router.push(url);
+    toggleOfflinePaymentModal();
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+  
   
 
   return (
     <>
-    {(!loanHistory && (window.location.pathname === '/loans' || window.location.pathname === '/dashboard'))  && (
+    {(!loanHistory && (window.location.pathname === '/loans' || window.location.pathname === '/dashboard' || window.location.pathname === '/viewOffer'))  && (
         <div>
         
     <div className=" bg-[#EBEBEB] lg:w-[487px] md:w-[487px] w-[410px] overflow-x-hidden rounded-[12px] min-h-[233px] h-auto mx-auto  mt-4 ">
@@ -216,7 +251,7 @@ const UserLoan: React.FC<UserLoanProps> = ({loanInfo,loanHistory=false}) => {
         </p>) : (
            <p className='text-[#282828] flex justify-between items-center mx-6 mb-2 font-semibold text-[16px] '>
         <span className=' '>{loanInfo?.status === 'OPEN' ? 'Amount Due' : 'Original Amount Due'}</span>
-            <span className='font-medium text-[15px]'>{formatCurrency(Number(loanInfo?.total_payable - loanInfo.penalty.toFixed(2)))}</span>
+            <span className='font-medium text-[15px]'>{formatCurrency(Number(loanInfo?.total_payable - loanInfo?.penalty?.toFixed(2)))}</span>
         </p> 
          )}
         { loanInfo?.loan_schedules?.filter((loan: any) => loan?.status === "partially_paid" && loanInfo?.status !== "OVERDUE")
@@ -363,7 +398,10 @@ const UserLoan: React.FC<UserLoanProps> = ({loanInfo,loanHistory=false}) => {
           placeholder='₦'
           className="border  border-[#D0D5DD] rounded-[8px] h-[40px] py-2 pl-4 mt-2 w-full"
         />
-        <button className='h-[41px] w-[169px] mt-6 text-[#FFFFFF] flex justify-center items-center text-[15px] font-semibold rounded-[22px] bg-[#111111]'>
+        {loading && <LoadingPage />}
+        <button 
+        onClick={handleOfflineSubmit} 
+        className='h-[41px] w-[169px] mt-6 text-[#FFFFFF] flex justify-center items-center text-[15px] font-semibold rounded-[22px] bg-[#111111]'>
           Make Payment
         </button>
     </div>
