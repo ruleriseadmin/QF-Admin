@@ -547,7 +547,11 @@ useEffect(() => {
                        :  col.name === 'TYPE' &&  row?.transaction_type === 'payment' ? (
                         <span className="bg-[#3173F3] rounded-full text-[#FFFFFF] px-3 py-1 flex justify-center gap-1">
                           {row?.loan?.has_upfront_interest ? <Image src="/images/upfront.png" alt="Loan" width={20} height={12} /> : null}
-                         Collection
+                         {row?.repayment_method === 'offline'
+                            ? "Collection(offline)"
+                            : row?.repayment_method === 'cashback'
+                            ? "Collection(cashback)"
+                            : "Collection"}
                         </span>
                       ) :  col.name === 'TYPE' &&  row?.transaction_type === 'unapplied_payment' ? (
                         <span className="bg-[#9D8814] rounded-full text-[#FFFFFF] justify-center px-3 py-1 flex gap-1">
